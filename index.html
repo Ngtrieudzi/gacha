@@ -3,81 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HÀNH TRÌNH ANH HÙNG</title>
+    <title>HÀNH TRÌNH ANH HÙNG - BẢN NÂNG CẤP</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
-            background: #0f0a1a;
+            background: #0a0512;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', 'Arial', sans-serif;
-            background-image: radial-gradient(ellipse at center, #1a0f2a 0%, #08040d 100%);
-            padding: 10px;
+            background-image: radial-gradient(ellipse at 20% 30%, #1a0f2a 0%, #06020a 100%);
+            padding: 8px;
         }
         #game-container {
-            background: linear-gradient(145deg, #1a1228, #0d0818);
-            width: 780px;
+            background: linear-gradient(160deg, #1a1228, #0d0818);
+            width: 840px;
             max-width: 100%;
-            padding: 20px 22px 25px;
-            border-radius: 40px;
-            border: 2px solid #7a5aaa;
+            padding: 18px 20px 22px;
+            border-radius: 44px;
+            border: 2px solid #8a5aba;
             box-shadow: 0 0 80px #4a2a7a88, inset 0 0 60px #2a1a3a44;
             color: #e4d8f0;
         }
-        /* ===== HEADER ===== */
         #title {
             text-align: center;
-            font-size: 2.4rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: #f0d060;
             text-shadow: 0 0 30px #8a6a2a, 0 0 60px #4a3a1a;
-            letter-spacing: 3px;
-            margin-bottom: 6px;
+            letter-spacing: 2px;
             font-family: 'Times New Roman', serif;
         }
         #subtitle {
             text-align: center;
             color: #a090b0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-bottom: 1px solid #3a2a5a;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
             font-style: italic;
         }
-        /* ===== SCENE IMAGE ===== */
+        /* ===== SCENE IMAGE (thay thế bằng link ảnh thật) ===== */
         #scene-image {
             width: 100%;
-            height: 200px;
+            height: 220px;
             background: #0a0a12;
-            border-radius: 24px;
-            border: 1px solid #3a2a6a;
-            margin-bottom: 14px;
+            border-radius: 28px;
+            border: 1px solid #4a3a6a;
+            margin-bottom: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 4rem;
+            font-size: 4.5rem;
             background-size: cover;
             background-position: center;
-            box-shadow: inset 0 0 50px #00000066;
-            transition: background 0.4s;
+            box-shadow: inset 0 0 50px #00000088;
+            transition: background 0.5s;
+            position: relative;
+            overflow: hidden;
         }
         #scene-image .emoji-bg {
-            text-shadow: 0 0 40px #000000cc;
-            opacity: 0.9;
+            text-shadow: 0 0 50px #000000ee;
+            opacity: 0.95;
+            z-index: 2;
+        }
+        #scene-image .img-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 1;
         }
         /* ===== STATS ===== */
         #stats-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px 16px;
+            gap: 4px 12px;
             background: #0d081a;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: 60px;
             border: 1px solid #3a2a5a;
-            margin-bottom: 12px;
-            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-size: 0.82rem;
             font-weight: 600;
             justify-content: space-around;
         }
@@ -85,7 +92,7 @@
         .stat-item span { color: #f0e070; }
         .stat-bar {
             display: inline-block;
-            width: 70px;
+            width: 60px;
             height: 8px;
             background: #1a1a2a;
             border-radius: 20px;
@@ -98,18 +105,37 @@
         #hp-fill { background: #d05050; }
         #mp-fill { background: #5080d0; }
         #xp-fill { background: #d0b040; }
-        /* ===== STORY TEXT ===== */
+        /* ===== REWARD POPUP ===== */
+        #reward-popup {
+            background: #1a0f20;
+            border: 2px solid #f0d060;
+            border-radius: 20px;
+            padding: 10px 16px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #f0e070;
+            display: none;
+            animation: glow 0.8s ease;
+            box-shadow: 0 0 30px #f0d06044;
+        }
+        @keyframes glow {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        /* ===== STORY ===== */
         #story-area {
             background: #08040e;
             border: 1px solid #2a1a4a;
             border-radius: 20px;
-            padding: 14px 18px;
-            min-height: 120px;
-            max-height: 180px;
+            padding: 12px 16px;
+            min-height: 110px;
+            max-height: 170px;
             overflow-y: auto;
-            font-size: 0.95rem;
-            line-height: 1.7;
-            margin-bottom: 14px;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
             color: #d0c8e0;
             box-shadow: inset 0 0 30px #00000066;
             scroll-behavior: smooth;
@@ -118,24 +144,24 @@
         #story-area::-webkit-scrollbar-thumb { background: #4a2a7a; border-radius: 20px; }
         .story-narrator { color: #c8c0d8; }
         .story-choice { color: #90d0d0; cursor: pointer; font-weight: 600; }
-        .story-choice:hover { color: #b0f0f0; text-decoration: underline; }
         .story-event { color: #f0c070; }
         .story-combat { color: #f07070; }
         .story-loot { color: #f0d060; }
-        /* ===== CHOICES (BUTTONS) ===== */
+        .story-death { color: #ff4040; font-weight: bold; }
+        /* ===== CHOICES ===== */
         #choices-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 6px;
+            gap: 8px;
+            margin-top: 4px;
         }
         .choice-btn {
             background: #1a1228;
             border: 1px solid #4a3a6a;
             color: #d0c8e8;
-            padding: 14px 8px;
+            padding: 12px 6px;
             border-radius: 30px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.15s;
@@ -149,12 +175,12 @@
         .choice-btn:disabled { opacity: 0.3; pointer-events: none; filter: grayscale(0.6); }
         .choice-btn.special { border-color: #c09040; background: #2a1a0a; }
         .choice-btn.danger { border-color: #c04040; background: #2a0a0a; }
-        /* ===== RESPONSIVE ===== */
+        .choice-btn.hidden { display: none; }
         @media (max-width: 550px) {
             #choices-panel { grid-template-columns: 1fr; }
-            #title { font-size: 1.8rem; }
-            #scene-image { height: 140px; font-size: 3rem; }
-            #stats-row { font-size: 0.75rem; gap: 4px; }
+            #title { font-size: 1.6rem; }
+            #scene-image { height: 150px; font-size: 3rem; }
+            #stats-row { font-size: 0.7rem; gap: 2px; }
             .stat-bar { width: 40px; }
         }
     </style>
@@ -162,26 +188,22 @@
 <body>
 <div id="game-container">
     <div id="title">⚔️ HÀNH TRÌNH ANH HÙNG</div>
-    <div id="subtitle">— Phiêu lưu &amp; Định mệnh —</div>
+    <div id="subtitle">— Phiên bản Huyền Thoại —</div>
 
-    <!-- Scene Image -->
-    <div id="scene-image"><span class="emoji-bg">🏰</span></div>
+    <div id="scene-image"><span class="emoji-bg">🏰</span><div class="img-overlay"></div></div>
 
-    <!-- Stats -->
     <div id="stats-row">
-        <div class="stat-item">❤️ HP <span id="hp-text">100/100</span> <span class="stat-bar"><span class="stat-fill" id="hp-fill" style="width:100%"></span></span></div>
-        <div class="stat-item">🌀 MP <span id="mp-text">40/40</span> <span class="stat-bar"><span class="stat-fill" id="mp-fill" style="width:100%"></span></span></div>
-        <div class="stat-item">⭐ LV.<span id="level-text">1</span> <span class="stat-bar"><span class="stat-fill" id="xp-fill" style="width:0%"></span></span></div>
+        <div class="stat-item">❤️ HP <span id="hp-text">100/100</span> <span class="stat-bar"><span class="stat-fill" id="hp-fill"></span></span></div>
+        <div class="stat-item">🌀 MP <span id="mp-text">40/40</span> <span class="stat-bar"><span class="stat-fill" id="mp-fill"></span></span></div>
+        <div class="stat-item">⭐ LV.<span id="level-text">1</span> <span class="stat-bar"><span class="stat-fill" id="xp-fill"></span></span></div>
         <div class="stat-item">🗡️ <span id="atk-text">10</span> 🛡️ <span id="def-text">4</span></div>
         <div class="stat-item">💰 <span id="gold-text">0</span></div>
     </div>
 
-    <!-- Story Log -->
-    <div id="story-area">
-        <div class="story-narrator">🌅 Chào mừng đến với Hành Trình Anh Hùng. Hãy bắt đầu cuộc phiêu lưu của bạn...</div>
-    </div>
+    <div id="reward-popup">🎁 PHẦN THƯỞNG ĐẶC BIỆT!</div>
 
-    <!-- Choices -->
+    <div id="story-area"><div class="story-narrator">🌅 Chào mừng! Hãy bắt đầu cuộc phiêu lưu...</div></div>
+
     <div id="choices-panel">
         <button class="choice-btn" id="choice1">▶ Lựa chọn 1</button>
         <button class="choice-btn" id="choice2">▶ Lựa chọn 2</button>
@@ -190,40 +212,48 @@
 
 <script>
     // ================================================================
-    // LIFE IN ADVENTURE STYLE - VIETNAMESE RPG
+    // LIFE IN ADVENTURE STYLE - NÂNG CẤP
     // ================================================================
     (function() {
         // ---------- PLAYER ----------
-        const player = {
-            hp: 100, maxHp: 100,
-            mp: 40, maxMp: 40,
-            level: 1,
-            xp: 0, xpNext: 30,
-            atk: 10,
-            def: 4,
-            gold: 0,
-            inventory: [],
-            flags: {}   // story flags
-        };
+        let player = {};
 
-        let gameState = 'story'; // 'story' | 'combat' | 'gameover'
+        function resetPlayer() {
+            player = {
+                hp: 100, maxHp: 100,
+                mp: 40, maxMp: 40,
+                level: 1,
+                xp: 0, xpNext: 30,
+                atk: 10,
+                def: 4,
+                gold: 0,
+                inventory: [],
+                flags: {},
+                deaths: 0,
+                totalKills: 0
+            };
+        }
+        resetPlayer();
+
+        let gameState = 'story';
         let currentNode = 'start';
         let combatEnemy = null;
         let isProcessing = false;
+        let deathStoryIndex = 0;
 
         // DOM refs
         const storyArea = document.getElementById('story-area');
         const sceneImg = document.getElementById('scene-image');
+        const rewardPopup = document.getElementById('reward-popup');
         const choice1 = document.getElementById('choice1');
         const choice2 = document.getElementById('choice2');
         const hpText = document.getElementById('hp-text'); const hpFill = document.getElementById('hp-fill');
         const mpText = document.getElementById('mp-text'); const mpFill = document.getElementById('mp-fill');
-        const xpText = document.getElementById('xp-text'); const xpFill = document.getElementById('xp-fill');
         const levelText = document.getElementById('level-text');
         const atkText = document.getElementById('atk-text'); const defText = document.getElementById('def-text');
         const goldText = document.getElementById('gold-text');
 
-        // ---------- SCENE IMAGES (emoji based, but can be replaced with URLs) ----------
+        // ---------- HÌNH ẢNH (có thể thay bằng link ảnh thật) ----------
         const sceneImages = {
             'start': '🏰',
             'forest': '🌲',
@@ -237,15 +267,32 @@
             'beach': '🏖️',
             'combat': '⚔️',
             'victory': '🏆',
-            'gameover': '💀'
+            'death1': '💀',
+            'death2': '☠️',
+            'death3': '🕊️',
+            'death4': '🌑',
+            'reward': '🎁'
         };
+
+        // Bạn có thể thay thế bằng URL ảnh thật:
+        // const realImageURLs = {
+        //     'start': 'https://example.com/start.jpg',
+        //     'forest': 'https://example.com/forest.jpg',
+        //     ...
+        // };
 
         function setScene(key) {
             const emoji = sceneImages[key] || '❓';
-            sceneImg.innerHTML = `<span class="emoji-bg" style="font-size:4rem;">${emoji}</span>`;
-            // If you have actual image URLs, uncomment and use:
-            // sceneImg.style.backgroundImage = `url('images/${key}.jpg')`;
-            // sceneImg.innerHTML = '';
+            // Nếu có link ảnh thật, bỏ comment dưới đây và comment dòng emoji
+            // if (realImageURLs[key]) {
+            //     sceneImg.style.backgroundImage = `url('${realImageURLs[key]}')`;
+            //     sceneImg.innerHTML = '<div class="img-overlay"></div>';
+            // } else {
+            //     sceneImg.innerHTML = `<span class="emoji-bg">${emoji}</span><div class="img-overlay"></div>`;
+            //     sceneImg.style.backgroundImage = 'none';
+            // }
+            sceneImg.innerHTML = `<span class="emoji-bg" style="font-size:4.5rem;">${emoji}</span><div class="img-overlay"></div>`;
+            sceneImg.style.backgroundImage = 'none';
         }
 
         // ---------- LOG ----------
@@ -257,28 +304,41 @@
             storyArea.scrollTop = storyArea.scrollHeight;
         }
 
-        function clearLog() {
-            storyArea.innerHTML = '';
-        }
+        function clearLog() { storyArea.innerHTML = ''; }
 
         // ---------- UPDATE UI ----------
         function updateUI() {
             const hpPct = (player.hp / player.maxHp) * 100;
             hpText.textContent = `${Math.floor(player.hp)}/${player.maxHp}`;
             hpFill.style.width = Math.min(100, Math.max(0, hpPct)) + '%';
-
             const mpPct = (player.mp / player.maxMp) * 100;
             mpText.textContent = `${Math.floor(player.mp)}/${player.maxMp}`;
             mpFill.style.width = Math.min(100, Math.max(0, mpPct)) + '%';
-
             const xpPct = (player.xp / player.xpNext) * 100;
-            xpText.textContent = `${Math.floor(player.xp)}/${player.xpNext}`;
-            xpFill.style.width = Math.min(100, Math.max(0, xpPct)) + '%';
-
             levelText.textContent = player.level;
             atkText.textContent = player.atk;
             defText.textContent = player.def;
             goldText.textContent = player.gold;
+        }
+
+        // ---------- RANDOM REWARD ----------
+        function showRandomReward() {
+            const rewards = [
+                { text: '💎 +15 Vàng', action: () => { player.gold += 15; } },
+                { text: '❤️ +10 HP tối đa', action: () => { player.maxHp += 10; player.hp = Math.min(player.hp + 10, player.maxHp); } },
+                { text: '🌀 +5 MP tối đa', action: () => { player.maxMp += 5; player.mp = Math.min(player.mp + 5, player.maxMp); } },
+                { text: '⚔️ +2 Sát thương', action: () => { player.atk += 2; } },
+                { text: '🛡️ +1 Phòng thủ', action: () => { player.def += 1; } },
+                { text: '⭐ +20 XP', action: () => { player.xp += 20; checkLevelUp(); } },
+                { text: '💊 Hồi phục 30 HP', action: () => { player.hp = Math.min(player.maxHp, player.hp + 30); } },
+                { text: '🎯 +3 ATK và +1 DEF', action: () => { player.atk += 3; player.def += 1; } }
+            ];
+            const pick = rewards[Math.floor(Math.random() * rewards.length)];
+            rewardPopup.textContent = `🎁 PHẦN THƯỞNG: ${pick.text}`;
+            rewardPopup.style.display = 'block';
+            pick.action();
+            updateUI();
+            setTimeout(() => { rewardPopup.style.display = 'none'; }, 2500);
         }
 
         // ---------- LEVEL UP ----------
@@ -294,60 +354,68 @@
                 player.atk += 3;
                 player.def += 2;
                 log(`⬆️ <b>LÊN CẤP ${player.level}!</b> HP/MP/ATK/DEF tăng!`, 'story-loot');
+                // Random thưởng khi lên cấp
+                showRandomReward();
                 updateUI();
             }
         }
 
-        // ---------- COMBAT SYSTEM ----------
-        function startCombat(enemy) {
+        // ---------- COMBAT ----------
+        function startCombat(enemy, nextNodeAfter) {
             combatEnemy = enemy;
             gameState = 'combat';
             setScene('combat');
-            log(`⚔️ <b>${enemy.name}</b> xuất hiện! (HP:${enemy.hp} ATK:${enemy.atk})`, 'story-combat');
-            showCombatChoices();
+            log(`⚔️ <b>${enemy.name}</b> xuất hiện! (HP:${enemy.hp} | ATK:${enemy.atk})`, 'story-combat');
+            showCombatChoices(nextNodeAfter);
         }
 
-        function showCombatChoices() {
+        let combatNextNode = null;
+
+        function showCombatChoices(nextNode) {
+            combatNextNode = nextNode || 'village';
             choice1.textContent = '⚔️ Tấn công';
             choice1.className = 'choice-btn danger';
             choice1.onclick = () => combatAction('attack');
-            choice2.textContent = '🌀 Kỹ năng đặc biệt (15 MP)';
+            choice2.textContent = '🌀 Kỹ năng (15 MP)';
             choice2.className = 'choice-btn special';
             choice2.onclick = () => combatAction('skill');
-            // Add third choice via double-click? We'll use choice2 as skill, but add flee option by holding?
-            // Instead, we override choice2 with flee if player wants? No, we'll add a third button dynamically? 
-            // But we have only 2 buttons. We'll combine skill and flee into choice2 toggle? 
-            // Better: we make choice2 as skill, and add a separate click on story? 
-            // We'll modify: choice2 becomes 'Flee' after skill? No. 
-            // Let's add a hidden third choice - we'll re-use choice1 and choice2 with a cycle? 
-            // Simplest: choice1 = attack, choice2 = skill. 
-            // We'll add an extra button later? For now, keep simple.
-            // Add flee as third option by double tapping? No. We'll set choice2 to skill, and if MP insufficient, show flee.
-            // Actually, we'll add a 3rd button dynamically? But layout fixed. 
-            // We'll just use choice2 as skill, and if player can't use skill, we show message and allow attack.
-            // Let's improve: we add a 3rd button by cloning? 
-            // Since we have only two, we'll make choice2 = 'Kỹ năng' and also add flee by clicking on story? 
-            // Better: we'll add a third button via DOM.
-            // For simplicity, we create a third button hidden and show it.
-            const existing = document.getElementById('choice3');
-            if (!existing) {
-                const btn = document.createElement('button');
-                btn.id = 'choice3';
-                btn.className = 'choice-btn';
-                btn.textContent = '🏃 Rút lui';
-                btn.onclick = () => combatAction('flee');
-                document.getElementById('choices-panel').appendChild(btn);
+            // Add extra buttons
+            addExtraCombatButtons();
+        }
+
+        function addExtraCombatButtons() {
+            let c3 = document.getElementById('choice3');
+            if (!c3) {
+                c3 = document.createElement('button');
+                c3.id = 'choice3';
+                c3.className = 'choice-btn';
+                document.getElementById('choices-panel').appendChild(c3);
             }
-            document.getElementById('choice3').style.display = 'block';
-            // Also add heal?
-            const btn4 = document.createElement('button');
-            btn4.id = 'choice4';
-            btn4.className = 'choice-btn';
-            btn4.textContent = '💚 Hồi phục (10 MP)';
-            btn4.onclick = () => combatAction('heal');
-            document.getElementById('choices-panel').appendChild(btn4);
-            // But we have 4 buttons now, grid handles it? grid is 2 columns, so 4 buttons will wrap.
-            // Adjust grid to auto-fit? 
+            c3.textContent = '💚 Hồi phục (10 MP)';
+            c3.className = 'choice-btn';
+            c3.style.display = 'block';
+            c3.onclick = () => combatAction('heal');
+
+            let c4 = document.getElementById('choice4');
+            if (!c4) {
+                c4 = document.createElement('button');
+                c4.id = 'choice4';
+                c4.className = 'choice-btn';
+                document.getElementById('choices-panel').appendChild(c4);
+            }
+            c4.textContent = '🏃 Rút lui';
+            c4.className = 'choice-btn';
+            c4.style.display = 'block';
+            c4.onclick = () => combatAction('flee');
+            // Adjust grid for 4 buttons
+            document.getElementById('choices-panel').style.gridTemplateColumns = '1fr 1fr';
+        }
+
+        function removeExtraButtons() {
+            const c3 = document.getElementById('choice3');
+            const c4 = document.getElementById('choice4');
+            if (c3) { c3.style.display = 'none'; c3.disabled = false; }
+            if (c4) { c4.style.display = 'none'; c4.disabled = false; }
             document.getElementById('choices-panel').style.gridTemplateColumns = '1fr 1fr';
         }
 
@@ -356,36 +424,29 @@
             isProcessing = true;
             setButtonsDisabled(true);
 
-            // Player action
             let dmg = 0;
             let healAmt = 0;
-            let usedMP = 0;
 
             if (action === 'attack') {
-                dmg = Math.max(2, player.atk - Math.floor(combatEnemy.def * 0.4) + Math.floor(Math.random() * 5) - 1);
+                dmg = Math.max(2, player.atk - Math.floor(combatEnemy.def * 0.4) + Math.floor(Math.random() * 6) - 1);
                 combatEnemy.hp -= dmg;
                 log(`⚔️ Bạn gây <b>${dmg}</b> sát thương.`, 'story-player');
             } else if (action === 'skill') {
                 if (player.mp < 15) {
                     log('🌀 Không đủ MP (cần 15).', 'story-system');
-                    isProcessing = false;
-                    setButtonsDisabled(false);
-                    return;
+                    isProcessing = false; setButtonsDisabled(false); return;
                 }
                 player.mp -= 15;
-                usedMP = 15;
-                dmg = Math.max(5, Math.floor(player.atk * 2.2) - Math.floor(combatEnemy.def * 0.3) + Math.floor(Math.random() * 6) - 2);
+                dmg = Math.max(5, Math.floor(player.atk * 2.3) - Math.floor(combatEnemy.def * 0.3) + Math.floor(Math.random() * 7) - 2);
                 combatEnemy.hp -= dmg;
                 log(`🌀 <b>Kỹ năng đặc biệt!</b> Gây <b>${dmg}</b> sát thương!`, 'story-event');
             } else if (action === 'heal') {
                 if (player.mp < 10) {
                     log('🌀 Không đủ MP để hồi phục (cần 10).', 'story-system');
-                    isProcessing = false;
-                    setButtonsDisabled(false);
-                    return;
+                    isProcessing = false; setButtonsDisabled(false); return;
                 }
                 player.mp -= 10;
-                healAmt = Math.floor(player.maxHp * 0.3) + 10;
+                healAmt = Math.floor(player.maxHp * 0.3) + 12;
                 player.hp = Math.min(player.maxHp, player.hp + healAmt);
                 log(`💚 Hồi phục <b>+${healAmt}</b> HP.`, 'story-loot');
             } else if (action === 'flee') {
@@ -394,45 +455,48 @@
                     combatEnemy = null;
                     gameState = 'story';
                     setScene('start');
-                    // remove extra buttons
-                    removeCombatButtons();
+                    removeExtraButtons();
                     showChoicesForNode(currentNode);
-                    isProcessing = false;
-                    setButtonsDisabled(false);
+                    isProcessing = false; setButtonsDisabled(false);
                     return;
                 } else {
                     log('❌ Rút lui thất bại!', 'story-combat');
                 }
             }
 
-            // Update UI after player action
             updateUI();
 
-            // Check enemy death
+            // Enemy death
             if (combatEnemy && combatEnemy.hp <= 0) {
                 combatEnemy.hp = 0;
-                const xpGain = Math.floor(combatEnemy.xp * (0.9 + Math.random() * 0.2));
+                const xpGain = Math.floor(combatEnemy.xp * (0.85 + Math.random() * 0.3));
                 const goldGain = Math.floor(Math.random() * (combatEnemy.goldMax - combatEnemy.goldMin + 1)) + combatEnemy.goldMin;
                 player.xp += xpGain;
                 player.gold += goldGain;
+                player.totalKills++;
                 log(`💀 <b>${combatEnemy.name}</b> bị hạ! +${xpGain} XP, +${goldGain} Vàng`, 'story-loot');
+                // Random reward sau mỗi lần hạ quái
+                showRandomReward();
                 combatEnemy = null;
                 gameState = 'story';
                 setScene('victory');
                 checkLevelUp();
-                removeCombatButtons();
-                // Continue story
+                removeExtraButtons();
+                // Chuyển tiếp cốt truyện
                 setTimeout(() => {
                     setScene('start');
-                    showChoicesForNode(currentNode);
-                }, 300);
+                    if (combatNextNode) {
+                        showChoicesForNode(combatNextNode);
+                    } else {
+                        showChoicesForNode('village');
+                    }
+                }, 400);
                 updateUI();
-                isProcessing = false;
-                setButtonsDisabled(false);
+                isProcessing = false; setButtonsDisabled(false);
                 return;
             }
 
-            // Enemy counter-attack
+            // Enemy counter
             if (combatEnemy) {
                 let enemyDmg = Math.max(1, combatEnemy.atk - Math.floor(player.def * 0.5) + Math.floor(Math.random() * 5) - 1);
                 player.hp -= enemyDmg;
@@ -440,67 +504,80 @@
                 if (player.hp <= 0) {
                     player.hp = 0;
                     gameState = 'gameover';
-                    setScene('gameover');
-                    log('💀 <b>Bạn đã ngã xuống...</b> Nhấn F5 để chơi lại.', 'story-combat');
-                    removeCombatButtons();
-                    choice1.textContent = '🔄 Chơi lại';
-                    choice1.className = 'choice-btn';
-                    choice1.onclick = () => location.reload();
-                    choice2.style.display = 'none';
-                    document.getElementById('choice3').style.display = 'none';
-                    document.getElementById('choice4').style.display = 'none';
-                    updateUI();
-                    isProcessing = false;
+                    handleDeath();
                     return;
                 }
                 updateUI();
             }
 
-            // Re-enable buttons
             isProcessing = false;
             setButtonsDisabled(false);
-            if (gameState === 'combat') showCombatChoices();
+            if (gameState === 'combat') showCombatChoices(combatNextNode);
         }
 
-        function removeCombatButtons() {
-            const c3 = document.getElementById('choice3');
-            const c4 = document.getElementById('choice4');
-            if (c3) c3.style.display = 'none';
-            if (c4) c4.style.display = 'none';
-            // Reset grid to 2 columns
-            document.getElementById('choices-panel').style.gridTemplateColumns = '1fr 1fr';
+        // ---------- HỆ THỐNG CHẾT ĐA DẠNG ----------
+        function handleDeath() {
+            player.deaths++;
+            const deathScenes = [
+                {
+                    text: '💀 Bạn ngã xuống trong rừng tối. Linh hồn bạn bay lên, nhưng một thế lực bí ẩn đưa bạn trở về... với sức mạnh mới!',
+                    bonus: () => { player.atk += 2; player.def += 1; }
+                },
+                {
+                    text: '☠️ Bạn bị quái vật nghiền nát. Nhưng từ tro tàn, bạn đứng dậy mạnh mẽ hơn! HP tối đa tăng vĩnh viễn.',
+                    bonus: () => { player.maxHp += 15; player.hp = player.maxHp; }
+                },
+                {
+                    text: '🕊️ Bạn chết trong giấc mơ... nhưng tỉnh dậy với một lời nguyền. MP tối đa tăng và nhận được 20 vàng.',
+                    bonus: () => { player.maxMp += 8; player.mp = player.maxMp; player.gold += 20; }
+                },
+                {
+                    text: '🌑 Bóng tối nuốt chửng bạn. Một giọng nói vang lên: "Hãy chiến đấu tiếp." Bạn nhận được +3 ATK và +10 HP.',
+                    bonus: () => { player.atk += 3; player.hp = Math.min(player.maxHp, player.hp + 10); }
+                },
+                {
+                    text: '💫 Bạn chết nhưng được thần linh cứu giúp. Tất cả chỉ số tăng nhẹ và nhận 30 vàng.',
+                    bonus: () => { player.atk += 1; player.def += 1; player.maxHp += 5; player.gold += 30; player.hp = player.maxHp; }
+                }
+            ];
+            const idx = player.deaths % deathScenes.length;
+            const scene = deathScenes[idx];
+            setScene(`death${idx+1}`);
+            clearLog();
+            log(`💀 <b>Bạn đã tử trận lần thứ ${player.deaths}.</b>`, 'story-death');
+            log(scene.text, 'story-narrator');
+            scene.bonus();
+            updateUI();
+            // Hiện nút chơi lại
+            choice1.textContent = '🔄 Sống lại và tiếp tục';
+            choice1.className = 'choice-btn special';
+            choice1.onclick = () => {
+                gameState = 'story';
+                setScene('start');
+                removeExtraButtons();
+                showChoicesForNode('start');
+            };
+            choice2.style.display = 'none';
+            removeExtraButtons();
+            setButtonsDisabled(false);
         }
 
-        function setButtonsDisabled(state) {
-            choice1.disabled = state;
-            choice2.disabled = state;
-            const c3 = document.getElementById('choice3');
-            const c4 = document.getElementById('choice4');
-            if (c3) c3.disabled = state;
-            if (c4) c4.disabled = state;
-        }
-
-        // ---------- STORY NODES ----------
+        // ---------- CỐT TRUYỆN ----------
         function showChoicesForNode(nodeId) {
             const node = storyNodes[nodeId];
             if (!node) {
-                log('❌ Lỗi: không tìm thấy nút kịch bản.', 'story-system');
+                log('❌ Lỗi kịch bản.', 'story-system');
                 return;
             }
             currentNode = nodeId;
             clearLog();
-            // Set scene
             setScene(node.scene || 'start');
-
-            // Show story text
             if (typeof node.text === 'function') {
                 log(node.text(), 'story-narrator');
             } else {
                 log(node.text, 'story-narrator');
             }
-
-            // Show choices
-            const choices = node.choices;
+            const choices = node.choices || [];
             if (choices.length >= 1) {
                 choice1.style.display = 'block';
                 choice1.textContent = choices[0].label;
@@ -517,9 +594,7 @@
             } else {
                 choice2.style.display = 'none';
             }
-            // Remove extra combat buttons
-            removeCombatButtons();
-            // If only 1 choice, hide choice2
+            removeExtraButtons();
             if (choices.length < 2) choice2.style.display = 'none';
             updateUI();
         }
@@ -530,18 +605,14 @@
                 log('⚠️ Bạn chưa đủ điều kiện.', 'story-system');
                 return;
             }
-            if (choice.action) {
-                choice.action();
-            }
+            if (choice.action) choice.action();
             if (choice.next) {
-                // If next is a string, go to that node
                 if (typeof choice.next === 'string') {
-                    // Check for combat
                     const nextNode = storyNodes[choice.next];
                     if (nextNode && nextNode.type === 'combat') {
-                        // Start combat
                         const enemy = nextNode.enemy();
-                        startCombat(enemy);
+                        const nextAfter = nextNode.nextAfter || 'village';
+                        startCombat(enemy, nextAfter);
                         return;
                     }
                     showChoicesForNode(choice.next);
@@ -552,129 +623,81 @@
             }
         }
 
-        // ---------- STORY DEFINITION (VIETNAMESE, ORIGINAL) ----------
+        function setButtonsDisabled(state) {
+            choice1.disabled = state;
+            choice2.disabled = state;
+            const c3 = document.getElementById('choice3');
+            const c4 = document.getElementById('choice4');
+            if (c3) c3.disabled = state;
+            if (c4) c4.disabled = state;
+        }
+
+        // ---------- ĐỊNH NGHĨA CỐT TRUYỆN (THÊM NHIỀU NHÁNH) ----------
         const storyNodes = {
             'start': {
                 scene: 'start',
-                text: '🏰 Chào mừng đến với <b>Hành Trình Anh Hùng</b>.<br>Bạn là một chiến binh trẻ mơ ước trở thành huyền thoại. Một ngày nọ, người làng kể về <b>Rồng Đen</b> đang uy hiếp vương quốc.<br><i>Hành trình của bạn bắt đầu...</i>',
+                text: '🏰 Chào mừng! Bạn là <b>anh hùng trẻ</b> với giấc mơ vĩ đại.<br>Người làng kể về <b>Rồng Đen</b> đang uy hiếp vương quốc. Nhưng có nhiều con đường để đi...<br><i>Hãy chọn con đường của bạn.</i>',
                 choices: [
-                    { label: '🌲 Đi vào Rừng Cấm', next: 'forest' },
-                    { label: '🏘️ Ghé thăm Làng Cổ', next: 'village' }
+                    { label: '🌲 Vào Rừng Cấm', next: 'forest' },
+                    { label: '🏘️ Đến Làng Cổ', next: 'village' }
                 ]
             },
             'forest': {
                 scene: 'forest',
-                text: '🌲 Bạn bước vào Rừng Cấm. Bóng tối bao trùm, tiếng động lạ vang lên từ phía xa.<br>Đột nhiên, một con <b>Chó Sói Bóng Đêm</b> lao ra tấn công bạn!',
+                text: '🌲 Rừng tối om. Bỗng <b>Chó Sói Bóng Đêm</b> lao ra!',
                 type: 'combat',
                 enemy: () => ({
                     name: 'Chó Sói Bóng Đêm',
-                    hp: 35 + Math.floor(player.level * 4),
+                    hp: 35 + Math.floor(player.level * 5),
                     atk: 9 + Math.floor(player.level * 2),
                     def: 3 + Math.floor(player.level * 0.5),
-                    xp: 18 + player.level * 3,
+                    xp: 18 + player.level * 4,
                     goldMin: 8 + player.level * 2,
                     goldMax: 16 + player.level * 3
                 }),
-                choices: [] // handled by combat system
+                nextAfter: 'forest_after'
+            },
+            'forest_after': {
+                scene: 'forest',
+                text: '🌲 Bạn vượt qua rừng và tìm thấy một <b>ngôi đền cổ</b>. Bên trong có một bức tượng vàng. Bạn có muốn vào không?',
+                choices: [
+                    { label: '🏛️ Khám phá đền', next: 'temple' },
+                    { label: '🚶 Tiếp tục đi', next: 'village' }
+                ]
+            },
+            'temple': {
+                scene: 'ruin',
+                text: '🏛️ Đền cổ kính. Bạn nhặt được một <b>Bùa cổ</b> (+5 HP tối đa, +2 ATK)!',
+                action: () => { player.maxHp += 5; player.atk += 2; player.hp = Math.min(player.hp + 5, player.maxHp); },
+                choices: [
+                    { label: '🔙 Quay lại làng', next: 'village' }
+                ]
             },
             'village': {
                 scene: 'village',
-                text: '🏘️ Làng Cổ yên bình. Dân làng chào đón bạn. Một cụ già tiến đến và nói: "Hãy đến <b>Hang Rồng</b> về phía đông, nơi giấu báu vật cổ xưa."<br>Bạn có thể mua sắm hoặc lên đường.',
+                text: '🏘️ Làng Cổ yên bình. Dân làng nói về <b>Hang Rồng</b> và <b>Lâu đài Vua</b>.<br>Cụ già bán cho bạn một bí mật...',
                 choices: [
                     { label: '🛒 Ghé cửa hàng', next: 'shop' },
-                    { label: '⛰️ Đến Hang Rồng', next: 'cave' }
+                    { label: '⛰️ Đến Hang Rồng', next: 'cave' },
+                    { label: '🏯 Đến Lâu đài Vua', next: 'castle' }
                 ]
             },
             'shop': {
                 scene: 'shop',
-                text: '🏪 Cửa hàng của phù thủy. Có những vật phẩm kỳ diệu.<br>Bạn có thể mua <b>Bùa hộ mệnh</b> (+5 HP tối đa, 30 vàng) hoặc <b>Bình máu</b> (hồi 20 HP, 10 vàng).',
+                text: '🏪 Phù thủy bán: <b>Bùa Sức Mạnh</b> (+3 ATK, 40 vàng) | <b>Bình Phục Hồi</b> (hồi 30 HP, 12 vàng) | <b>Áo Giáp</b> (+3 DEF, 35 vàng)',
                 choices: [
-                    { label: '💰 Mua Bùa hộ mệnh (30 vàng)', 
-                      condition: () => player.gold >= 30,
-                      action: () => { player.gold -= 30; player.maxHp += 5; player.hp = Math.min(player.hp + 5, player.maxHp); log('🛡️ Bạn đã mua Bùa hộ mệnh! +5 HP tối đa.', 'story-loot'); updateUI(); },
+                    { label: '💰 Mua Bùa Sức Mạnh (40 vàng)', 
+                      condition: () => player.gold >= 40,
+                      action: () => { player.gold -= 40; player.atk += 3; log('⚔️ +3 ATK!', 'story-loot'); updateUI(); },
                       next: 'village' },
-                    { label: '💰 Mua Bình máu (10 vàng)',
-                      condition: () => player.gold >= 10,
-                      action: () => { player.gold -= 10; player.hp = Math.min(player.hp + 20, player.maxHp); log('💚 Bạn đã mua Bình máu! +20 HP.', 'story-loot'); updateUI(); },
+                    { label: '💰 Mua Áo Giáp (35 vàng)',
+                      condition: () => player.gold >= 35,
+                      action: () => { player.gold -= 35; player.def += 3; log('🛡️ +3 DEF!', 'story-loot'); updateUI(); },
                       next: 'village' },
-                    { label: '🔙 Quay lại làng', next: 'village' }
+                    { label: '🔙 Quay lại', next: 'village' }
                 ]
             },
             'cave': {
                 scene: 'cave',
-                text: '🕯️ Hang động tối tăm. Bạn nghe thấy tiếng rung động mạnh mẽ từ sâu bên trong.<br>Đó là <b>Quái vật Đá</b> canh giữ lối vào.',
-                type: 'combat',
-                enemy: () => ({
-                    name: 'Quái vật Đá',
-                    hp: 55 + Math.floor(player.level * 6),
-                    atk: 14 + Math.floor(player.level * 2.5),
-                    def: 8 + Math.floor(player.level * 0.8),
-                    xp: 30 + player.level * 5,
-                    goldMin: 15 + player.level * 3,
-                    goldMax: 28 + player.level * 5
-                }),
-                choices: []
-            },
-            'castle': {
-                scene: 'castle',
-                text: '🏯 Bạn đến lâu đài của Vua. Nhà vua nói: "Hãy tiêu diệt <b>Rồng Đen</b> và cứu vương quốc! Ngươi sẽ nhận được phần thưởng xứng đáng."',
-                choices: [
-                    { label: '🐉 Chấp nhận nhiệm vụ', next: 'dragon' },
-                    { label: '🏃 Rời đi', next: 'start' }
-                ]
-            },
-            'dragon': {
-                scene: 'dragon',
-                text: '🐉 Bạn đối mặt với <b>Rồng Đen</b> khổng lồ! Hơi thở lửa thiêu đốt không gian.<br>Trận chiến cuối cùng bắt đầu!',
-                type: 'combat',
-                enemy: () => ({
-                    name: 'Rồng Đen',
-                    hp: 110 + Math.floor(player.level * 12),
-                    atk: 25 + Math.floor(player.level * 4),
-                    def: 12 + Math.floor(player.level * 1.5),
-                    xp: 80 + player.level * 12,
-                    goldMin: 50 + player.level * 8,
-                    goldMax: 90 + player.level * 15
-                }),
-                choices: []
-            }
-        };
-
-        // Override forest and cave to link back after combat
-        // We'll handle combat resolution by checking if node has type combat, and after enemy death we go to next node.
-        // So we need to add a 'next' field to combat nodes.
-        // We'll patch them.
-        storyNodes['forest'].next = 'village';
-        storyNodes['cave'].next = 'castle';
-        storyNodes['dragon'].next = 'victory';
-        // Add victory node
-        storyNodes['victory'] = {
-            scene: 'victory',
-            text: '🏆 <b>CHIẾN THẮNG!</b> Bạn đã đánh bại Rồng Đen và cứu vương quốc. Dân làng tung hô bạn như một huyền thoại.<br><i>Hành trình của bạn kết thúc tại đây... nhưng những câu chuyện khác đang chờ đón.</i>',
-            choices: [
-                { label: '🔄 Chơi lại', action: () => location.reload() }
-            ]
-        };
-
-        // ---------- INIT ----------
-        function init() {
-            showChoicesForNode('start');
-            // Add extra buttons hidden initially
-            const c3 = document.createElement('button');
-            c3.id = 'choice3';
-            c3.className = 'choice-btn';
-            c3.style.display = 'none';
-            document.getElementById('choices-panel').appendChild(c3);
-            const c4 = document.createElement('button');
-            c4.id = 'choice4';
-            c4.className = 'choice-btn';
-            c4.style.display = 'none';
-            document.getElementById('choices-panel').appendChild(c4);
-            updateUI();
-        }
-
-        init();
-    })();
-</script>
-</body>
-</html>
+                text: '🕯️ Hang động tối. <b>Quái vật Đá</b> canh giữ lối đi.',
+                type: 'combat
