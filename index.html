@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLO LEVELING - ARISE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            background: #0a0a0f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            background-image: radial-gradient(circle at 20% 30%, #1a1a2e 0%, #0a0a0f 80%);
+        }
+        #game-container {
+            background: #0f0f1a;
+            width: 920px;
+            max-width: 98vw;
+            padding: 18px 20px 22px;
+            border-radius: 32px;
+            border: 1px solid #6a4a9a;
+            box-shadow: 0 0 60px #3a2a5a88, inset 0 0 40px #1a0a2a44;
+            color: #d0c8f0;
+            position: relative;
+        }
+        /* ===== HEADER ===== */
+        #title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #b090e0;
+            text-shadow: 0 0 30px #6a4a9a, 0 0 60px #3a1a6a;
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+        }
+        #stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            background: #0d0d1a;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid #3a2a5a;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .stat { color: #b0a0d0; }
+        .stat span { color: #f0d070; margin-right: 4px; }
+        #hp-bar, #mp-bar, #xp-bar {
+            display: inline-block;
+            width: 90px;
+            height: 10px;
+            background: #1a1a2a;
+            border-radius: 20px;
+            margin-left: 4px;
+            vertical-align: middle;
+            overflow: hidden;
+            border: 1px solid #3a3a5a;
+        }
+        #hp-fill { background: #c04040; height: 100%; width: 100%; transition: width 0.2s; }
+        #mp-fill { background: #4080d0; height: 100%; width: 100%; transition: width 0.2s; }
+        #xp-fill { background: #c0a040; height: 100%; width: 0%; transition: width 0.2s; }
+        /* ===== MIDDLE: ENEMY + SHADOW ARMY ===== */
+        #battlefield {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a14;
+            border-radius: 30px;
+            padding: 10px 20px;
+            margin: 10px 0 12px;
+            border: 1px solid #2a2a4a;
+            min-height: 70px;
+        }
+        #enemy-info {
+            flex: 1;
+        }
+        #enemy-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #e0a080;
+        }
+        #enemy-hp-text { font-size: 0.9rem; color: #b0a0c0; }
+        #enemy-hp-bar {
+            width: 160px;
+            height: 12px;
+            background: #1a1a2a;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #4a3a5a;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        #enemy-hp-fill {
+            height: 100%;
+            width: 100%;
+            background: #c05040;
+            transition: width 0.25s;
+        }
+        #shadow-army {
+            text-align: right;
+            color: #9080c0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-left: 1px solid #2a2a4a;
+            padding-left: 16px;
+        }
+        #shadow-count { color: #c0a0f0; font-size: 1.4rem; }
+        /* ===== LOG ===== */
+        #log-area {
+            background: #08080e;
+            border: 1px solid #1a1a3a;
+            border-radius: 16px;
+            padding: 12px 16px;
+            height: 140px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 14px;
+            color: #b0b0d0;
+            box-shadow: inset 0 0 30px #00000088;
+            scroll-behavior: smooth;
+        }
+        #log-area::-webkit-scrollbar { width: 5px; }
+        #log-area::-webkit-scrollbar-thumb { background: #3a2a6a; border-radius: 20px; }
+        .log-enemy { color: #f0a080; }
+        .log-player { color: #80d0d0; }
+        .log-system { color: #a0a0b0; }
+        .log-shadow { color: #b090f0; }
+        .log-loot { color: #f0d060; }
+        .log-boss { color: #ff6060; font-weight: bold; }
+        /* ===== ACTIONS ===== */
+        #action-panel {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 8px 0 10px;
+        }
+        .act-btn {
+            background: #1a1a2e;
+            border: 1px solid #3a2a6a;
+            color: #d0c0f0;
+            padding: 12px 0;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.12s;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 0 #0a0a16;
+        }
+        .act-btn:hover { background: #2a2a4e; border-color: #6a4a9a; transform: scale(1.03); }
+        .act-btn:active { transform: translateY(3px); box-shadow: none; }
+        .act-btn:disabled { opacity: 0.35; pointer-events: none; filter: grayscale(0.7); }
+        #btn-shadow { background: #1a0a2a; border-color: #6a4aaa; color: #c0a0f0; }
+        #btn-shadow:hover { background: #2a1a4a; }
+        #btn-heal { background: #0a1a2a; border-color: #2a6a8a; }
+        #btn-heal:hover { background: #1a2a4a; }
+        #btn-flee { background: #2a0a0a; border-color: #6a2a2a; }
+        #btn-flee:hover { background: #4a1a1a; }
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            #action-panel { grid-template-columns: repeat(3, 1fr); }
+            #stats-bar { font-size: 0.7rem; flex-direction: column; gap: 4px; }
+            #title { font-size: 1.4rem; }
+            #enemy-hp-bar { width: 80px; }
+        }
+    </style>
+</head>
+<body>
+<div id="game-container">
+    <div id="title">⚔️ ARISE ⚔️</div>
+
+    <div id="stats-bar">
+        <div class="stat">❤️ <span id="hp-text">120/120</span> <span id="hp-bar"><span id="hp-fill"></span></span></div>
+        <div class="stat">🌀 <span id="mp-text">50/50</span> <span id="mp-bar"><span id="mp-fill"></span></span></div>
+        <div class="stat">⭐ LV.<span id="level-text">1</span> <span id="xp-bar"><span id="xp-fill"></span></span></div>
+        <div class="stat">🗡️ <span id="atk-text">15</span> 🛡️ <span id="def-text">6</span></div>
+        <div class="stat">💰 <span id="gold-text">0</span></div>
+    </div>
+
+    <div id="battlefield">
+        <div id="enemy-info">
+            <div id="enemy-name">🐺 Hổ Báo</div>
+            <div id="enemy-hp-text">HP: <span id="enemy-hp-current">40</span>/<span id="enemy-hp-max">40</span>
+                <span id="enemy-hp-bar"><span id="enemy-hp-fill"></span></span>
+            </div>
+        </div>
+        <div id="shadow-army">
+            <div>👻 QUÂN ĐOÀN BÓNG TỐI</div>
+            <div><span id="shadow-count">0</span> lính</div>
+        </div>
+    </div>
+
+    <div id="log-area">
+        <div class="log-system">> Hệ thống kích hoạt. Hãy tiêu diệt quái vật để triệu hồi.</div>
+    </div>
+
+    <div id="action-panel">
+        <button class="act-btn" id="btn-attack">⚔️ Tấn công</button>
+        <button class="act-btn" id="btn-skill">🌀 Kỹ năng</button>
+        <button class="act-btn" id="btn-shadow">👻 Triệu hồi</button>
+        <button class="act-btn" id="btn-heal">💚 Hồi phục</button>
+        <button class="act-btn" id="btn-flee">🏃 Rút lui</button>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // SOLO LEVELING RPG - PALOFSC
+    // ================================================================
+    (function() {
+        // ---------- PLAYER ----------
+        const player = {
+            hp: 120, maxHp: 120,
+            mp: 50, maxMp: 50,
+            level: 1,
+            xp: 0, xpNext: 40,
+            baseAtk: 15,
+            baseDef: 6,
+            gold: 0,
+            kills: 0,
+            shadows: 0,          // number of shadow soldiers
+            shadowAtkBonus: 0
+        };
+
+        // ---------- ENEMY POOL (SOLO LEVELING STYLE) ----------
+        const enemyTemplates = [
+            { name: 'Hổ Báo',       hp: 40, atk: 10, def: 3, xp: 18, goldMin: 8, goldMax: 18, tier: 1 },
+            { name: 'Kỵ Sĩ Bóng Tối', hp: 60, atk: 16, def: 6, xp: 28, goldMin: 14, goldMax: 28, tier: 2 },
+            { name: 'Quỷ Vương Cấp Thấp', hp: 85, atk: 22, def: 9, xp: 42, goldMin: 22, goldMax: 45, tier: 3 },
+            { name: 'Rồng Bóng Tối', hp: 120, atk: 30, def: 14, xp: 65, goldMin: 40, goldMax: 70, tier: 4 },
+            { name: 'Boss: Kiến Chúa', hp: 200, atk: 40, def: 20, xp: 120, goldMin: 80, goldMax: 150, tier: 5 }
+        ];
+
+        let enemy = null;
+        let enemyMaxHp = 0;
+        let isFighting = false;
+        let gameOver = false;
+
+        // DOM refs
+        const logArea = document.getElementById('log-area');
+        const hpText = document.getElementById('hp-text'); const hpFill = document.getElementById('hp-fill');
+        const mpText = document.getElementById('mp-text'); const mpFill = document.getElementById('mp-fill');
+        const xpText = document.getElementById('xp-text'); const xpFill = document.getElementById('xp-fill');
+        const levelText = document.getElementById('level-text');
+        const atkText = document.getElementById('atk-text'); const defText = document.getElementById('def-text');
+        const goldText = document.getElementById('gold-text');
+        const enemyName = document.getElementById('enemy-name');
+        const enemyHpCurrent = document.getElementById('enemy-hp-current');
+        const enemyHpMax = document.getElementById('enemy-hp-max');
+        const enemyHpFill = document.getElementById('enemy-hp-fill');
+        const shadowCount = document.getElementById('shadow-count');
+
+        const btnAttack = document.getElementById('btn-attack');
+        const btnSkill = document.getElementById('btn-skill');
+        const btnShadow = document.getElementById('btn-shadow');
+        const btnHeal = document.getElementById('btn-heal');
+        const btnFlee = document.getElementById('btn-flee');
+
+        // ---------- HELPERS ----------
+        function log(msg, cls = 'log-system') {
+            const div = document.createElement('div');
+            div.className = cls;
+            div.textContent = msg;
+            logArea.appendChild(div);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function updateUI() {
+            // player
+            const hpPct = (player.hp / player.maxHp) * 100;
+            hpText.textContent = `${Math.floor(player.hp)}/${player.maxHp}`;
+            hpFill.style.width = Math.min(100, Math.max(0, hpPct)) + '%';
+
+            const mpPct = (player.mp / player.maxMp) * 100;
+            mpText.textContent = `${Math.floor(player.mp)}/${player.maxMp}`;
+            mpFill.style.width = Math.min(100, Math.max(0, mpPct)) + '%';
+
+            const xpPct = (player.xp / player.xpNext) * 100;
+            xpText.textContent = `${Math.floor(player.xp)}/${player.xpNext}`;
+            xpFill.style.width = Math.min(100, Math.max(0, xpPct)) + '%';
+
+            levelText.textContent = player.level;
+            atkText.textContent = player.baseAtk + player.shadowAtkBonus;
+            defText.textContent = player.baseDef;
+            goldText.textContent = player.gold;
+            shadowCount.textContent = player.shadows;
+
+            // enemy
+            if (enemy) {
+                enemyName.textContent = `⚔️ ${enemy.name}`;
+                enemyHpCurrent.textContent = Math.floor(enemy.hp);
+                enemyHpMax.textContent = enemyMaxHp;
+                const pct = (enemy.hp / enemyMaxHp) * 100;
+                enemyHpFill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+            } else {
+                enemyName.textContent = '🏆 Đã tiêu diệt';
+                enemyHpCurrent.textContent = '0';
+                enemyHpMax.textContent = '0';
+                enemyHpFill.style.width = '0%';
+            }
+        }
+
+        // ---------- LEVEL UP ----------
+        function checkLevelUp() {
+            while (player.xp >= player.xpNext) {
+                player.level++;
+                player.xp -= player.xpNext;
+                player.xpNext = Math.floor(player.xpNext * 1.6) + 30;
+                player.maxHp = Math.floor(player.maxHp * 1.15) + 10;
+                player.hp = player.maxHp;
+                player.maxMp = Math.floor(player.maxMp * 1.12) + 6;
+                player.mp = player.maxMp;
+                player.baseAtk += 4;
+                player.baseDef += 2;
+                // Shadow army grows with level
+                if (player.level % 3 === 0) {
+                    player.shadows += 1;
+                    player.shadowAtkBonus += 3;
+                    log(`👻 Triệu hồi thêm lính bóng tối! (+1 shadow, +3 ATK)`, 'log-shadow');
+                }
+                log(`⬆️ LÊN CẤP ${player.level}! HP/MP/ATK/DEF tăng.`, 'log-loot');
+                updateUI();
+            }
+        }
+
+        // ---------- SPAWN ENEMY ----------
+        function spawnEnemy() {
+            let pool;
+            const lv = player.level;
+            if (lv <= 2) pool = enemyTemplates.slice(0, 2);
+            else if (lv <= 4) pool = enemyTemplates.slice(0, 3);
+            else if (lv <= 7) pool = enemyTemplates.slice(0, 4);
+            else pool = enemyTemplates;
+
+            // Boss chance scales with level
+            let template;
+            if (Math.random() < 0.08 + (lv * 0.01)) {
+                template = enemyTemplates[4]; // Boss
+            } else {
+                const idx = Math.floor(Math.random() * pool.length);
+                template = pool[idx];
+            }
+
+            const scale = 1 + (lv - 1) * 0.10;
+            enemy = {
+                name: template.name,
+                hp: Math.floor(template.hp * scale),
+                atk: Math.floor(template.atk * scale),
+                def: Math.floor(template.def * scale),
+                xpReward: Math.floor(template.xp * (1 + (lv-1)*0.12)),
+                goldMin: Math.floor(template.goldMin * (1 + (lv-1)*0.08)),
+                goldMax: Math.floor(template.goldMax * (1 + (lv-1)*0.08)),
+                tier: template.tier
+            };
+            enemyMaxHp = enemy.hp;
+            const bossTag = (template.tier === 5) ? '🔥 BOSS: ' : '';
+            log(`👹 ${bossTag}${enemy.name} xuất hiện! (HP:${enemy.hp} ATK:${enemy.atk} DEF:${enemy.def})`,
+                template.tier === 5 ? 'log-boss' : 'log-enemy');
+            updateUI();
+        }
+
+        // ---------- SHADOW ATTACK (passive bonus) ----------
+        function getShadowDamage() {
+            return player.shadows * 2 + Math.floor(Math.random() * 3);
+        }
+
+        // ---------- COMBAT ----------
+        function playerAttack(skill = false) {
+            if (gameOver || !enemy || isFighting) return;
+            isFighting = true;
+            setButtonsDisabled(true);
+
+            // MP cost for skill
+            if (skill) {
+                if (player.mp < 12) {
+                    log('🌀 Không đủ MP để dùng kỹ năng!', 'log-system');
+                    isFighting = false;
+                    setButtonsDisabled(false);
+                    return;
+                }
+                player.mp -= 12;
+            }
+
+            // Player damage
+            let atkPower = player.baseAtk + player.shadowAtkBonus;
+            if (skill) atkPower = Math.floor(atkPower * 1.9);
+            let dmg = Math.max(2, atkPower - Math.floor(enemy.def * 0.5) + Math.floor(Math.random() * 8) - 3);
+            enemy.hp -= dmg;
+
+            // Shadow assist
+            let shadowDmg = 0;
+            if (player.shadows > 0 && Math.random() < 0.45) {
+                shadowDmg = getShadowDamage();
+                enemy.hp -= shadowDmg;
+                log(`👻 Bóng tối tấn công! +${shadowDmg} sát thương.`, 'log-shadow');
+            }
+
+            const skillLabel = skill ? '🌀 KỸ NĂNG! ' : '⚔️ ';
+            log(`${skillLabel}Bạn gây ${dmg}${shadowDmg > 0 ? ` (+${shadowDmg} shadow)` : ''} sát thương.`, 'log-player');
+
+            // Enemy death
+            if (enemy.hp <= 0) {
+                enemy.hp = 0;
+                const xpGain = Math.floor(enemy.xpReward * (0.9 + Math.random() * 0.2));
+                const goldGain = Math.floor(Math.random() * (enemy.goldMax - enemy.goldMin + 1)) + enemy.goldMin;
+                player.xp += xpGain;
+                player.gold += goldGain;
+                player.kills++;
+
+                // Shadow extraction (Solo Leveling mechanic)
+                if (enemy.tier >= 2 && Math.random() < 0.35) {
+                    player.shadows += 1;
+                    player.shadowAtkBonus += 3;
+                    log(`👻 Triệu hồi thành công bóng tối từ ${enemy.name}! (+1 shadow, +3 ATK)`, 'log-shadow');
+                }
+
+                log(`💀 ${enemy.name} bị hạ! +${xpGain} XP, +${goldGain} Vàng`, 'log-loot');
+                enemy = null;
+                updateUI();
+                checkLevelUp();
+                setTimeout(() => {
+                    spawnEnemy();
+                    isFighting = false;
+                    setButtonsDisabled(false);
+                }, 350);
+                return;
+            }
+
+            // Enemy counter
+            let enemyDmg = Math.max(1, enemy.atk - Math.floor(player.baseDef * 0.5) + Math.floor(Math.random() * 6) - 2);
+            player.hp -= enemyDmg;
+            log(`💢 ${enemy.name} phản công: -${enemyDmg} HP`, 'log-enemy');
+
+            if (player.hp <= 0) {
+                player.hp = 0;
+                gameOver = true;
+                log(`💀 Bạn đã ngã xuống... Nhấn F5 để chơi lại.`, 'log-system');
+                updateUI();
+                setButtonsDisabled(true);
+                isFighting = false;
+                return;
+            }
+
+            updateUI();
+            isFighting = false;
+            setButtonsDisabled(false);
+        }
+
+        // ---------- SHADOW SUMMON (active skill) ----------
+        function summonShadow() {
+            if (gameOver || !enemy || isFighting) return;
+            if (player.mp < 20) {
+                log('🌀 Không đủ MP để triệu hồi (cần 20 MP).', 'log-system');
+                return;
+            }
+            player.mp -= 20;
+            player.shadows += 1;
+            player.shadowAtkBonus += 3;
+            log(`👻 TRIỆU HỒI BÓNG TỐI! +1 lính, +3 ATK.`, 'log-shadow');
+            updateUI();
+            // Enemy attacks during summon
+            let enemyDmg = Math.max(1, enemy.atk - Math.floor(player.baseDef * 0.4) + Math.floor(Math.random() * 5) - 1);
+            player.hp -= enemyDmg;
+            log(`💢 ${enemy.name} tấn công khi bạn triệu hồi: -${enemyDmg} HP`, 'log-enemy');
+            if (player.hp <= 0) {
+                player.hp = 0; gameOver = true;
+                log(`💀 Bạn đã ngã xuống...`, 'log-system');
+                updateUI();
+                setButtonsDisabled(true);
+            }
+            updateUI();
+        }
+
+        // ---------- HEAL ----------
+        function playerHeal() {
+            if (gameOver || !enemy || isFighting) return;
+            if (player.hp >= player.maxHp) {
+                log('HP đã đầy.', 'log-system');
+                return;
+            }
+            const healAmt = Math.floor(player.maxHp * 0.35) + 8;
+            player.hp = Math.min(player.maxHp, player.hp + healAmt);
+            log(`💚 Hồi phục +${healAmt} HP.`, 'log-player');
+            updateUI();
+            // Enemy counter
+            let enemyDmg = Math.max(1, enemy.atk - Math.floor(player.baseDef * 0.4) + Math.floor(Math.random() * 5) - 1);
+            player.hp -= enemyDmg;
+            log(`💢 ${enemy.name} tấn công: -${enemyDmg} HP`, 'log-enemy');
+            if (player.hp <= 0) {
+                player.hp = 0; gameOver = true;
+                log(`💀 Bạn đã ngã xuống...`, 'log-system');
+                updateUI();
+                setButtonsDisabled(true);
+            }
+            updateUI();
+        }
+
+        // ---------- FLEE ----------
+        function playerFlee() {
+            if (gameOver || !enemy || isFighting) return;
+            if (Math.random() < 0.5) {
+                log(`🏃 Bạn rút lui an toàn khỏi ${enemy.name}.`, 'log-system');
+                enemy = null;
+                updateUI();
+                setTimeout(() => spawnEnemy(), 300);
+            } else {
+                log(`❌ Rút lui thất bại!`, 'log-enemy');
+                let enemyDmg = Math.max(1, enemy.atk - Math.floor(player.baseDef * 0.4) + Math.floor(Math.random() * 5) - 1);
+                player.hp -= enemyDmg;
+                log(`💢 ${enemy.name} tấn công: -${enemyDmg} HP`, 'log-enemy');
+                if (player.hp <= 0) {
+                    player.hp = 0; gameOver = true;
+                    log(`💀 Bạn đã ngã xuống...`, 'log-system');
+                    updateUI();
+                    setButtonsDisabled(true);
+                }
+                updateUI();
+            }
+        }
+
+        // ---------- UI HELPERS ----------
+        function setButtonsDisabled(state) {
+            const btns = [btnAttack, btnSkill, btnShadow, btnHeal, btnFlee];
+            btns.forEach(b => b.disabled = state);
+        }
+
+        // ---------- INIT ----------
+        function init() {
+            player.hp = 120; player.maxHp = 120;
+            player.mp = 50; player.maxMp = 50;
+            player.level = 1; player.xp = 0; player.xpNext = 40;
+            player.baseAtk = 15; player.baseDef = 6;
+            player.gold = 0; player.kills = 0;
+            player.shadows = 0; player.shadowAtkBonus = 0;
+            gameOver = false; enemy = null; isFighting = false;
+            logArea.innerHTML = '<div class="log-system">> ARISE. Hãy chiến đấu và triệu hồi quân đoàn bóng tối.</div>';
+            spawnEnemy();
+            updateUI();
+            setButtonsDisabled(false);
+
+            btnAttack.onclick = () => playerAttack(false);
+            btnSkill.onclick = () => playerAttack(true);
+            btnShadow.onclick = summonShadow;
+            btnHeal.onclick = playerHeal;
+            btnFlee.onclick = playerFlee;
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
