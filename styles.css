@@ -1,39 +1,391 @@
-/* styles.css - Bổ sung hỗ trợ ảnh */
+/* ========== CSS GIỐNG GAME GỐC ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+}
 
-/* ... (giữ nguyên phần cũ) ... */
+body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: #0a0a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    color: #fff;
+}
 
-/* Thêm style cho ảnh trong thẻ bài */
+#game-container {
+    max-width: 1100px;
+    width: 100%;
+    background: linear-gradient(180deg, #0f0f2a 0%, #1a1a3e 100%);
+    border-radius: 25px;
+    padding: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.05);
+}
+
+/* ----- THANH TIÊU ĐỀ (giống game) ----- */
+#header {
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 215, 0, 0.15);
+    margin-bottom: 12px;
+}
+
+#header h1 {
+    font-size: 2rem;
+    color: #ffd700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    letter-spacing: 2px;
+}
+
+#subtitle {
+    color: #8899bb;
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+}
+
+/* ----- THANH THÔNG TIN NGƯỜI CHƠI (giống game) ----- */
+#player-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#health-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+#hp-icon {
+    font-size: 1.2rem;
+}
+
+#health-bar {
+    flex: 1;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 150px;
+}
+
+#health-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #4ecdc4);
+    transition: width 0.4s ease;
+    border-radius: 30px;
+}
+
+#hp-text {
+    font-size: 0.85rem;
+    color: #ddd;
+    font-weight: bold;
+    min-width: 70px;
+}
+
+#stats-right {
+    display: flex;
+    gap: 20px;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+#stats-right span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ----- HỘP THÔNG BÁO (giống game) ----- */
+#message-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    min-height: 40px;
+    border-left: 4px solid #ffd700;
+    color: #ddd;
+    font-size: 0.9rem;
+}
+
+/* ----- KHU VỰC CHIẾN ĐẤU (giống game) ----- */
+#battle-area {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 18px;
+    padding: 15px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    min-height: 300px;
+}
+
+/* Hàng quái vật (phía trên) */
+#enemy-row {
+    display: flex;
+    justify-content: center;
+    min-height: 140px;
+    padding: 10px;
+    background: rgba(255, 0, 0, 0.03);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 50, 50, 0.08);
+    margin-bottom: 15px;
+}
+
+#enemy-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Hàng thẻ của bạn (phía dưới) */
+#player-row {
+    display: flex;
+    justify-content: center;
+    min-height: 140px;
+    padding: 10px;
+    background: rgba(0, 255, 200, 0.03);
+    border-radius: 12px;
+    border: 1px dashed rgba(0, 255, 200, 0.08);
+}
+
+#player-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+/* ----- THẺ BÀI (GIỐNG HỆT GAME GỐC) ----- */
+.card {
+    background: linear-gradient(145deg, #2b2b4a, #1a1a2e);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 16px;
+    padding: 10px 12px;
+    width: 130px;
+    text-align: center;
+    cursor: default;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+/* Thẻ bài của bạn (có hiệu ứng hover như game) */
+.card-player {
+    cursor: pointer;
+    border-color: rgba(255, 215, 0, 0.4);
+}
+
+.card-player:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: #ffd700;
+    box-shadow: 0 12px 35px rgba(255, 215, 0, 0.2);
+}
+
+/* Thẻ quái vật (không hover) */
+.card-enemy {
+    border-color: rgba(255, 80, 80, 0.3);
+    cursor: default;
+}
+
+/* ẢNH NHÂN VẬT (giống game) */
 .card img {
     width: 60px;
     height: 60px;
     object-fit: cover;
     border-radius: 50%;
-    margin: 0 auto 8px;
+    margin: 0 auto 6px;
     display: block;
-    border: 2px solid #f5c842;
-    transition: transform 0.3s;
+    border: 2px solid rgba(255, 215, 0, 0.3);
 }
 
-.card:hover img {
-    transform: scale(1.05);
+.card-enemy img {
+    border-color: rgba(255, 80, 80, 0.3);
 }
 
-.card.enemy img {
-    border-color: #ff6b6b;
+/* Tên và thông tin thẻ */
+.card-name {
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: #fff;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Các rarity khác nhau cho viền ảnh */
-.card.rarity-common img { border-color: #8899bb; }
-.card.rarity-uncommon img { border-color: #4ecdc4; }
-.card.rarity-rare img { border-color: #4a9eff; }
-.card.rarity-epic img { border-color: #a855f7; }
-.card.rarity-legendary img { border-color: #f5c842; }
-.card.rarity-ex img { border-color: #ff6b6b; box-shadow: 0 0 20px rgba(255,107,107,0.3); }
+.card-anime {
+    font-size: 0.6rem;
+    color: #8899bb;
+    margin-bottom: 6px;
+}
 
-/* Responsive cho ảnh */
+/* Thanh máu trên thẻ (giống game) */
+.card-health-bar {
+    height: 6px;
+    background: #222;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 4px 0;
+}
+
+.card-health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+    transition: width 0.3s;
+}
+
+.card-stats {
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+.card-rarity-common { border-color: #8899bb; }
+.card-rarity-uncommon { border-color: #4ecdc4; }
+.card-rarity-rare { border-color: #4a9eff; }
+.card-rarity-epic { border-color: #a855f7; }
+.card-rarity-legendary { border-color: #ffd700; }
+.card-rarity-ex { border-color: #ff6b6b; box-shadow: 0 0 25px rgba(255, 107, 107, 0.2); }
+
+/* ----- HÀNG TAY BÀI (giống game) ----- */
+#hand-area {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 12px;
+    min-height: 110px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+#hand-container {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Thẻ trong tay (nhỏ hơn 1 chút) */
+.card-hand {
+    width: 100px;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-hand:hover {
+    transform: translateY(-8px);
+    border-color: #ffd700;
+}
+
+.card-hand img {
+    width: 45px;
+    height: 45px;
+}
+
+.card-hand .card-name {
+    font-size: 0.75rem;
+}
+
+/* ----- NÚT ĐIỀU KHIỂN (giống game) ----- */
+#controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px 0 5px;
+}
+
+#controls button {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.2s;
+    background: linear-gradient(145deg, #f5c842, #e6b830);
+    color: #1a1a2e;
+    box-shadow: 0 4px 15px rgba(245, 200, 66, 0.15);
+}
+
+#controls button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(245, 200, 66, 0.25);
+}
+
+.btn-challenge {
+    color: white !important;
+}
+
+.btn-danger {
+    background: linear-gradient(145deg, #ff6b6b, #cc4444) !important;
+    color: white !important;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(145deg, #ff7a7a, #dd5555) !important;
+}
+
+/* ----- BOSS ANNOUNCEMENT (giống game) ----- */
+.boss-announce {
+    background: linear-gradient(145deg, #2a0a0a, #1a0505);
+    border: 2px solid #ff6b6b;
+    border-radius: 16px;
+    padding: 12px 20px;
+    text-align: center;
+    margin-bottom: 12px;
+    animation: bossPulse 2s ease-in-out infinite;
+}
+
+.boss-announce h2 {
+    color: #ff6b6b;
+    font-size: 1.4rem;
+    text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+}
+
+@keyframes bossPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 107, 107, 0.1); }
+    50% { box-shadow: 0 0 50px rgba(255, 107, 107, 0.25); }
+}
+
+/* ----- GAME OVER (giống game) ----- */
+.game-over-overlay {
+    margin-top: 15px;
+    padding: 20px;
+    background: rgba(255, 0, 0, 0.08);
+    border-radius: 16px;
+    border: 2px solid #ff6b6b;
+    text-align: center;
+}
+
+.game-over-overlay h2 {
+    color: #ff6b6b;
+}
+
+/* ----- RESPONSIVE (giống game) ----- */
 @media (max-width: 768px) {
-    .card img {
-        width: 40px;
-        height: 40px;
-    }
+    #game-container { padding: 12px; }
+    #header h1 { font-size: 1.5rem; }
+    .card, .card-hand { width: 90px; padding: 6px 8px; }
+    .card img, .card-hand img { width: 40px; height: 40px; }
+    #health-bar { min-width: 80px; }
+    #stats-right { gap: 10px; font-size: 0.8rem; }
+    #controls button { padding: 8px 14px; font-size: 0.75rem; }
 }
