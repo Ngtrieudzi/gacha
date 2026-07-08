@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Anime Card Brawler - Ảnh nhân vật</title>
+    <title>Anime Card Brawler - Gacha & Battle</title>
     <style>
+        /* ===== RESET & GLOBAL ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
             background: #0a0e1a;
@@ -21,9 +22,13 @@
             padding: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.9);
             border: 1px solid #2a3a6a;
-            max-width: 1100px;
+            max-width: 1200px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
+
         /* ===== TOP BAR ===== */
         #topBar {
             display: flex;
@@ -33,7 +38,6 @@
             padding: 8px 16px;
             background: #1a2540;
             border-radius: 40px;
-            margin-bottom: 16px;
             flex-wrap: wrap;
             gap: 8px;
         }
@@ -50,18 +54,60 @@
         }
         #topBar .stat span { color: #ffd966; }
 
+        /* ===== MAIN LAYOUT: Sidebar + Content ===== */
+        #mainLayout {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        #sidebar {
+            background: #0f172a;
+            border-radius: 24px;
+            padding: 16px;
+            border: 1px solid #2a3a5a;
+            min-width: 160px;
+            flex: 0 0 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #sidebar .menu-item {
+            padding: 10px 14px;
+            border-radius: 16px;
+            color: #aabbdd;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-align: center;
+        }
+        #sidebar .menu-item:hover { background: #1a2540; border-color: #2f4a7a; }
+        #sidebar .menu-item.active {
+            background: #2a4a7a;
+            color: #fff;
+            border-color: #4a8aff;
+            box-shadow: 0 0 20px rgba(74,138,255,0.2);
+        }
+
+        /* ===== CONTENT AREA ===== */
+        #content {
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         /* ===== BATTLE AREA ===== */
         #battleArea {
             background: #0a1220;
             border-radius: 24px;
             padding: 16px;
             border: 1px solid #2a3a5a;
-            min-height: 350px;
-            position: relative;
         }
         #battleCanvas {
             width: 100%;
-            height: 320px;
+            height: 280px;
             background: #0a1220;
             border-radius: 16px;
             border: 1px solid #2a3a5a;
@@ -79,7 +125,7 @@
         }
         #controls {
             display: flex;
-            gap: 12px;
+            gap: 8px;
             flex-wrap: wrap;
             margin-top: 8px;
         }
@@ -87,31 +133,31 @@
             background: #2a4a7a;
             border: none;
             color: white;
-            padding: 10px 24px;
+            padding: 8px 20px;
             border-radius: 40px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.15s;
             box-shadow: 0 4px 0 #0a1a2a;
             flex: 1;
-            min-width: 100px;
+            min-width: 80px;
         }
         #controls button:hover { background: #3a6a9a; transform: translateY(-2px); box-shadow: 0 6px 0 #0a1a2a; }
         #controls button:active { transform: translateY(4px); box-shadow: 0 1px 0 #0a1a2a; }
         #controls button:disabled { opacity: 0.4; transform: translateY(4px); box-shadow: 0 1px 0 #0a1a2a; }
 
-        /* ===== TEAM AREA (Cards with images) ===== */
+        /* ===== TEAM CARDS ===== */
         #teamArea {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-top: 16px;
             justify-content: center;
+            margin-top: 4px;
         }
         .card {
-            width: 140px;
-            height: 210px;
+            width: 130px;
+            height: 200px;
             border-radius: 16px;
             overflow: hidden;
             position: relative;
@@ -120,73 +166,102 @@
             cursor: pointer;
             background-size: cover;
             background-position: center;
+            background-color: #1a2540;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .card:hover { transform: scale(1.05); border-color: #4a8aff; }
         .card.dead { opacity: 0.4; border-color: #6a2a2a; filter: grayscale(0.8); }
-        .card.boss { border-color: #ff4444; box-shadow: 0 0 30px #ff4444; }
         .card .overlay {
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%);
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 10px 8px 8px;
+            padding: 8px 6px 6px;
             color: white;
             text-align: center;
         }
-        .card .name {
-            font-weight: bold;
-            font-size: 15px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
-        }
-        .card .stats {
-            font-size: 12px;
-            opacity: 0.9;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-        }
-        .card .hpBar {
-            background: rgba(0,0,0,0.7);
-            height: 6px;
-            border-radius: 6px;
-            margin: 4px 0;
-        }
-        .card .hpBar .fill {
-            height: 100%;
-            border-radius: 6px;
-            background: #4caf50;
-            transition: width 0.3s;
-        }
+        .card .name { font-weight: bold; font-size: 13px; text-shadow: 0 2px 8px rgba(0,0,0,0.9); }
+        .card .stats { font-size: 11px; opacity: 0.9; }
+        .card .hpBar { background: rgba(0,0,0,0.7); height: 5px; border-radius: 6px; margin: 3px 0; }
+        .card .hpBar .fill { height: 100%; border-radius: 6px; transition: width 0.3s; }
         .card .rarity-badge {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            font-size: 12px;
+            top: 6px;
+            right: 6px;
+            font-size: 10px;
             font-weight: bold;
-            padding: 2px 10px;
+            padding: 2px 8px;
             border-radius: 20px;
             background: rgba(0,0,0,0.7);
             border: 1px solid #ffd700;
             color: #ffd700;
         }
-        .card .avatar-fallback {
-            display: none;
-            font-size: 48px;
-            text-align: center;
-            padding-top: 30px;
+        .card .avatar-svg {
+            width: 100%;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
         }
 
-        /* ===== LOG ===== */
+        /* ===== GACHA PANEL ===== */
+        #gachaPanel {
+            display: none;
+            background: #0f172a;
+            border-radius: 24px;
+            padding: 16px;
+            border: 1px solid #2a3a5a;
+            margin-top: 8px;
+        }
+        #gachaPanel.active { display: block; }
+        #gachaPanel .gacha-btn {
+            background: #4a2a6a;
+            border: none;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #1a0a2a;
+            transition: all 0.1s;
+            margin: 4px;
+        }
+        #gachaPanel .gacha-btn:active { transform: translateY(6px); box-shadow: 0 1px 0 #1a0a2a; }
+        #gachaPanel .gacha-btn:disabled { opacity: 0.4; transform: translateY(4px); box-shadow: 0 2px 0 #1a0a2a; }
+        #gachaResult {
+            margin-top: 12px;
+            min-height: 50px;
+            color: #aabbdd;
+            text-align: center;
+            font-size: 14px;
+        }
+        .gacha-hero {
+            display: inline-block;
+            background: #1a2540;
+            border-radius: 12px;
+            padding: 8px;
+            margin: 4px;
+            border: 2px solid #2f4a7a;
+            width: 100px;
+            text-align: center;
+        }
+        .gacha-hero .avatar { font-size: 36px; display: block; }
+        .gacha-hero .name { color: #fff; font-size: 12px; font-weight: bold; }
+
+        /* ===== COMBAT LOG ===== */
         #logArea {
             background: #0a1220;
             border-radius: 16px;
             padding: 10px 14px;
-            margin-top: 12px;
             max-height: 80px;
             overflow-y: auto;
             color: #88ccff;
             font-size: 13px;
             border: 1px solid #1a2a4a;
+            margin-top: 4px;
         }
         #logArea::-webkit-scrollbar { width: 4px; }
         #logArea::-webkit-scrollbar-thumb { background: #2a4a7a; border-radius: 10px; }
@@ -207,174 +282,97 @@
             100% { opacity: 0; transform: translateY(-100px) scale(1.3); }
         }
 
-        @media (max-width: 600px) {
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            #sidebar { flex: 1 1 100%; flex-direction: row; flex-wrap: wrap; justify-content: center; }
+            #sidebar .menu-item { padding: 6px 14px; font-size: 13px; }
             .card { width: 100px; height: 160px; }
-            .card .name { font-size: 12px; }
-            .card .stats { font-size: 10px; }
+            .card .avatar-svg { font-size: 40px; height: 80px; }
         }
     </style>
 </head>
 <body>
+
 <div id="gameContainer">
     <!-- TOP BAR -->
     <div id="topBar">
-        <div class="stat">💰 <span id="goldDisplay">100</span></div>
-        <div class="stat">⚔️ <span id="waveDisplay">1</span></div>
+        <div class="stat">💰 <span id="goldDisplay">200</span></div>
+        <div class="stat">💎 <span id="gemDisplay">50</span></div>
+        <div class="stat">⚔️ Wave <span id="waveDisplay">1</span></div>
         <div class="stat">🏆 <span id="winDisplay">0</span></div>
-        <div class="stat">❤️ <span id="hpDisplay">100/100</span></div>
     </div>
 
-    <!-- BATTLE AREA -->
-    <div id="battleArea">
-        <canvas id="battleCanvas" width="900" height="320"></canvas>
-        <div id="waveInfo">
-            <span>🌊 Wave <span id="waveNum">1</span></span>
-            <span>👾 Kẻ thù: <span id="enemyCount">0</span></span>
-            <span>⚡ Trạng thái: <span id="battleStatus">🟢 Sẵn sàng</span></span>
+    <!-- MAIN LAYOUT -->
+    <div id="mainLayout">
+        <!-- SIDEBAR -->
+        <div id="sidebar">
+            <div class="menu-item active" data-tab="team">⚔️ Team</div>
+            <div class="menu-item" data-tab="gacha">🎲 Gacha</div>
+            <div class="menu-item" data-tab="challenges">📜 Challenges</div>
+            <div class="menu-item" data-tab="profiles">👤 Profiles</div>
+            <div class="menu-item" data-tab="settings">⚙️ Settings</div>
         </div>
-        <div id="controls">
-            <button id="startWaveBtn">⚔️ Bắt đầu Wave</button>
-            <button id="autoBattleBtn">🤖 Tự động</button>
-            <button id="resetBtn">🔄 Reset</button>
+
+        <!-- CONTENT -->
+        <div id="content">
+            <!-- BATTLE AREA -->
+            <div id="battleArea">
+                <canvas id="battleCanvas" width="900" height="280"></canvas>
+                <div id="waveInfo">
+                    <span>🌊 Wave <span id="waveNum">1</span></span>
+                    <span>👾 Kẻ thù: <span id="enemyCount">0</span></span>
+                    <span>⚡ <span id="battleStatus">🟢 Sẵn sàng</span></span>
+                </div>
+                <div id="controls">
+                    <button id="startWaveBtn">⚔️ Bắt đầu Wave</button>
+                    <button id="autoBattleBtn">🤖 Tự động</button>
+                    <button id="resetBtn">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- TEAM AREA -->
+            <div id="teamArea"></div>
+
+            <!-- GACHA PANEL -->
+            <div id="gachaPanel">
+                <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;">
+                    <button class="gacha-btn" id="gacha1Btn">🎲 Gacha 1x (10 💎)</button>
+                    <button class="gacha-btn" id="gacha10Btn">🎰 Gacha 10x (90 💎)</button>
+                </div>
+                <div id="gachaResult">🎴 Nhấn nút để rút tướng mới!</div>
+            </div>
+
+            <!-- COMBAT LOG -->
+            <div id="logArea">⚔️ Chào mừng! Hãy bắt đầu wave đầu tiên.</div>
         </div>
     </div>
-
-    <!-- TEAM AREA -->
-    <div id="teamArea"></div>
-
-    <!-- LOG -->
-    <div id="logArea">⚔️ Chào mừng! Hãy bắt đầu wave đầu tiên.</div>
 </div>
 
 <script>
 // ================================================================
-//  ANIME CARD BRAWLER - WITH CHARACTER IMAGES
+//  ANIME CARD BRAWLER - WITH GACHA & SVG CHARACTERS
 // ================================================================
 
-// ==================== 1. CHARACTER DATA WITH IMAGES ====================
-// LƯU Ý: Thay đường dẫn ảnh bằng ảnh thật của bạn.
-// Ảnh nên để trong thư mục assets/characters/ với tên trùng với id.
+// ==================== 1. CHARACTER DATA (SVG AVATAR) ====================
+// Mỗi nhân vật có avatar dạng SVG (màu sắc, hình dạng cơ bản)
+// Không cần tải ảnh ngoài, tự vẽ trên Canvas khi cần.
 const CHARACTERS = [
-    { 
-        id: 'naruto', 
-        name: 'Naruto Uzumaki', 
-        image: 'assets/characters/naruto.png', // Đường dẫn ảnh
-        avatar: '🍥', // Fallback nếu ảnh lỗi
-        atk: 14, def: 6, hp: 90, maxHp: 90, 
-        element: 'wind', type: 'ninja', rarity: 'rare', 
-        skill: 'Rasengan', skillDmg: 22 
-    },
-    { 
-        id: 'sasuke', 
-        name: 'Sasuke Uchiha', 
-        image: 'assets/characters/sasuke.png',
-        avatar: '🌀',
-        atk: 16, def: 5, hp: 85, maxHp: 85, 
-        element: 'fire', type: 'shinobi', rarity: 'epic', 
-        skill: 'Chidori', skillDmg: 28 
-    },
-    { 
-        id: 'luffy', 
-        name: 'Monkey D. Luffy', 
-        image: 'assets/characters/luffy.png',
-        avatar: '🏴‍☠️',
-        atk: 15, def: 7, hp: 100, maxHp: 100, 
-        element: 'water', type: 'pirate', rarity: 'epic', 
-        skill: 'Gomu Gomu', skillDmg: 25 
-    },
-    { 
-        id: 'zoro', 
-        name: 'Roronoa Zoro', 
-        image: 'assets/characters/zoro.png',
-        avatar: '🗡️',
-        atk: 18, def: 4, hp: 95, maxHp: 95, 
-        element: 'wind', type: 'swordsman', rarity: 'epic', 
-        skill: 'Santoryu', skillDmg: 30 
-    },
-    { 
-        id: 'gojo', 
-        name: 'Satoru Gojo', 
-        image: 'assets/characters/gojo.png',
-        avatar: '👁️',
-        atk: 20, def: 8, hp: 110, maxHp: 110, 
-        element: 'light', type: 'sorcerer', rarity: 'legend', 
-        skill: 'Domain', skillDmg: 40 
-    },
-    { 
-        id: 'sukuna', 
-        name: 'Ryomen Sukuna', 
-        image: 'assets/characters/sukuna.png',
-        avatar: '👹',
-        atk: 22, def: 6, hp: 120, maxHp: 120, 
-        element: 'dark', type: 'curse', rarity: 'legend', 
-        skill: 'Malevolent Shrine', skillDmg: 45 
-    },
-    { 
-        id: 'tanjiro', 
-        name: 'Tanjiro Kamado', 
-        image: 'assets/characters/tanjiro.png',
-        avatar: '🔥',
-        atk: 16, def: 8, hp: 95, maxHp: 95, 
-        element: 'fire', type: 'slayer', rarity: 'rare', 
-        skill: 'Hinokami', skillDmg: 26 
-    },
-    { 
-        id: 'nezuko', 
-        name: 'Nezuko Kamado', 
-        image: 'assets/characters/nezuko.png',
-        avatar: '🎀',
-        atk: 14, def: 10, hp: 90, maxHp: 90, 
-        element: 'dark', type: 'demon', rarity: 'rare', 
-        skill: 'Blood Burst', skillDmg: 20 
-    },
-    { 
-        id: 'asta', 
-        name: 'Asta', 
-        image: 'assets/characters/asta.png',
-        avatar: '📖',
-        atk: 17, def: 7, hp: 100, maxHp: 100, 
-        element: 'light', type: 'mage', rarity: 'epic', 
-        skill: 'Anti-Magic', skillDmg: 28 
-    },
-    { 
-        id: 'meliodas', 
-        name: 'Meliodas', 
-        image: 'assets/characters/meliodas.png',
-        avatar: '⚔️',
-        atk: 21, def: 9, hp: 115, maxHp: 115, 
-        element: 'dark', type: 'demon', rarity: 'legend', 
-        skill: 'Full Counter', skillDmg: 38 
-    },
-    { 
-        id: 'escanor', 
-        name: 'Escanor', 
-        image: 'assets/characters/escanor.png',
-        avatar: '☀️',
-        atk: 25, def: 5, hp: 130, maxHp: 130, 
-        element: 'fire', type: 'lion', rarity: 'legend', 
-        skill: 'Cruel Sun', skillDmg: 50 
-    },
-    { 
-        id: 'rengoku', 
-        name: 'Kyojuro Rengoku', 
-        image: 'assets/characters/rengoku.png',
-        avatar: '🔥',
-        atk: 19, def: 7, hp: 105, maxHp: 105, 
-        element: 'fire', type: 'flame', rarity: 'epic', 
-        skill: 'Flame Breathing', skillDmg: 32 
-    },
-    {
-        id: 'midoriya',
-        name: 'Izuku Midoriya',
-        image: 'assets/characters/midoriya.png',
-        avatar: '💚',
-        atk: 16, def: 6, hp: 95, maxHp: 95,
-        element: 'light', type: 'hero', rarity: 'rare',
-        skill: 'One For All', skillDmg: 28
-    }
+    { id: 'naruto', name: 'Naruto Uzumaki', color: '#f4a460', hair: '#ffcc00', atk: 14, def: 6, hp: 90, maxHp: 90, rarity: 'rare', skill: 'Rasengan', skillDmg: 22, element: 'wind', type: 'ninja' },
+    { id: 'sasuke', name: 'Sasuke Uchiha', color: '#f0c8a0', hair: '#1a1a3a', atk: 16, def: 5, hp: 85, maxHp: 85, rarity: 'epic', skill: 'Chidori', skillDmg: 28, element: 'fire', type: 'shinobi' },
+    { id: 'luffy', name: 'Monkey D. Luffy', color: '#f0c8a0', hair: '#1a1a1a', atk: 15, def: 7, hp: 100, maxHp: 100, rarity: 'epic', skill: 'Gomu Gomu', skillDmg: 25, element: 'water', type: 'pirate' },
+    { id: 'zoro', name: 'Roronoa Zoro', color: '#f0c8a0', hair: '#2a8a2a', atk: 18, def: 4, hp: 95, maxHp: 95, rarity: 'epic', skill: 'Santoryu', skillDmg: 30, element: 'wind', type: 'swordsman' },
+    { id: 'gojo', name: 'Satoru Gojo', color: '#f0c8a0', hair: '#ffffff', atk: 20, def: 8, hp: 110, maxHp: 110, rarity: 'legend', skill: 'Domain', skillDmg: 40, element: 'light', type: 'sorcerer' },
+    { id: 'sukuna', name: 'Ryomen Sukuna', color: '#f0c8a0', hair: '#cc3333', atk: 22, def: 6, hp: 120, maxHp: 120, rarity: 'legend', skill: 'Malevolent Shrine', skillDmg: 45, element: 'dark', type: 'curse' },
+    { id: 'tanjiro', name: 'Tanjiro Kamado', color: '#f0c8a0', hair: '#cc4422', atk: 16, def: 8, hp: 95, maxHp: 95, rarity: 'rare', skill: 'Hinokami', skillDmg: 26, element: 'fire', type: 'slayer' },
+    { id: 'nezuko', name: 'Nezuko Kamado', color: '#f0c8a0', hair: '#cc8844', atk: 14, def: 10, hp: 90, maxHp: 90, rarity: 'rare', skill: 'Blood Burst', skillDmg: 20, element: 'dark', type: 'demon' },
+    { id: 'asta', name: 'Asta', color: '#f0c8a0', hair: '#aa8833', atk: 17, def: 7, hp: 100, maxHp: 100, rarity: 'epic', skill: 'Anti-Magic', skillDmg: 28, element: 'light', type: 'mage' },
+    { id: 'meliodas', name: 'Meliodas', color: '#f0c8a0', hair: '#ffcc00', atk: 21, def: 9, hp: 115, maxHp: 115, rarity: 'legend', skill: 'Full Counter', skillDmg: 38, element: 'dark', type: 'demon' },
+    { id: 'escanor', name: 'Escanor', color: '#f0c8a0', hair: '#ff8800', atk: 25, def: 5, hp: 130, maxHp: 130, rarity: 'legend', skill: 'Cruel Sun', skillDmg: 50, element: 'fire', type: 'lion' },
+    { id: 'rengoku', name: 'Kyojuro Rengoku', color: '#f0c8a0', hair: '#ff6633', atk: 19, def: 7, hp: 105, maxHp: 105, rarity: 'epic', skill: 'Flame Breathing', skillDmg: 32, element: 'fire', type: 'flame' },
+    { id: 'midoriya', name: 'Izuku Midoriya', color: '#f0c8a0', hair: '#2a8a2a', atk: 16, def: 6, hp: 95, maxHp: 95, rarity: 'rare', skill: 'One For All', skillDmg: 28, element: 'light', type: 'hero' },
 ];
 
-// ==================== 2. ENEMY TEMPLATES ====================
+// ==================== 2. ENEMIES ====================
 const ENEMIES = [
     { name: 'Goblin', avatar: '👺', atk: 8, def: 3, hp: 30, maxHp: 30, type: 'normal' },
     { name: 'Skeleton', avatar: '💀', atk: 10, def: 4, hp: 40, maxHp: 40, type: 'normal' },
@@ -385,11 +383,10 @@ const ENEMIES = [
 
 // ==================== 3. GAME STATE ====================
 const state = {
-    gold: 100,
+    gold: 200,
+    gems: 50,
     wave: 1,
     wins: 0,
-    playerHp: 100,
-    maxHp: 100,
     team: [],
     enemies: [],
     battleLog: [],
@@ -398,24 +395,25 @@ const state = {
     battleInterval: null,
     particles: [],
     floatingTexts: [],
-    // Cache ảnh
-    imageCache: {},
+    currentTab: 'team',
 };
 
 // ==================== 4. DOM REFS ====================
 const canvas = document.getElementById('battleCanvas');
 const ctx = canvas.getContext('2d');
-const W = 900, H = 320;
+const W = 900, H = 280;
 
 const goldSpan = document.getElementById('goldDisplay');
+const gemSpan = document.getElementById('gemDisplay');
 const waveSpan = document.getElementById('waveDisplay');
 const winSpan = document.getElementById('winDisplay');
-const hpSpan = document.getElementById('hpDisplay');
 const waveNum = document.getElementById('waveNum');
 const enemyCount = document.getElementById('enemyCount');
 const battleStatus = document.getElementById('battleStatus');
 const logDiv = document.getElementById('logArea');
 const teamArea = document.getElementById('teamArea');
+const gachaPanel = document.getElementById('gachaPanel');
+const gachaResult = document.getElementById('gachaResult');
 const startBtn = document.getElementById('startWaveBtn');
 const autoBtn = document.getElementById('autoBattleBtn');
 const resetBtn = document.getElementById('resetBtn');
@@ -425,51 +423,71 @@ function rand(min, max) { return Math.random() * (max - min) + min; }
 function randInt(min, max) { return Math.floor(rand(min, max+1)); }
 function pick(arr) { return arr[randInt(0, arr.length-1)]; }
 
-// ==================== 6. IMAGE LOADER WITH CACHE ====================
-function loadImage(src) {
-    return new Promise((resolve) => {
-        if (state.imageCache[src]) {
-            resolve(state.imageCache[src]);
-            return;
-        }
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-            state.imageCache[src] = img;
-            resolve(img);
-        };
-        img.onerror = () => {
-            // Tạo ảnh fallback với emoji
-            const canvas = document.createElement('canvas');
-            canvas.width = 128;
-            canvas.height = 128;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#2a2a4a';
-            ctx.fillRect(0, 0, 128, 128);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '60px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            // Lấy emoji từ tên (nếu có)
-            const char = CHARACTERS.find(c => c.image === src);
-            ctx.fillText(char ? char.avatar : '❓', 64, 64);
-            const fallbackImg = new Image();
-            fallbackImg.src = canvas.toDataURL();
-            state.imageCache[src] = fallbackImg;
-            resolve(fallbackImg);
-        };
-        img.src = src;
-    });
+// ==================== 6. DRAW SVG AVATAR ON CANVAS ====================
+function drawSVGAvatar(ctx, x, y, size, char) {
+    const s = size || 60;
+    const cx = x, cy = y;
+    
+    // Body
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+    ctx.shadowBlur = 10;
+    
+    // Face
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - 2, s*0.4, s*0.45, 0, 0, Math.PI*2);
+    ctx.fillStyle = char.color || '#f0c8a0';
+    ctx.fill();
+    ctx.strokeStyle = '#d4a080';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    
+    // Hair
+    ctx.shadowBlur = 5;
+    ctx.fillStyle = char.hair || '#333';
+    ctx.beginPath();
+    ctx.ellipse(cx - s*0.2, cy - s*0.35, s*0.25, s*0.18, -0.2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + s*0.2, cy - s*0.35, s*0.25, s*0.18, 0.2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - s*0.42, s*0.3, s*0.15, 0, 0, Math.PI*2);
+    ctx.fill();
+    
+    // Eyes
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#222';
+    ctx.beginPath();
+    ctx.arc(cx - s*0.16, cy - s*0.1, s*0.08, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + s*0.16, cy - s*0.1, s*0.08, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx - s*0.18, cy - s*0.13, s*0.04, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + s*0.14, cy - s*0.13, s*0.04, 0, Math.PI*2);
+    ctx.fill();
+    
+    // Mouth
+    ctx.strokeStyle = '#8a5a4a';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(cx, cy + s*0.1, s*0.1, 0.2, Math.PI-0.2);
+    ctx.stroke();
+    
+    ctx.restore();
 }
 
 // ==================== 7. INIT TEAM ====================
-async function initTeam() {
+function initTeam() {
     state.team = [];
     const shuffled = [...CHARACTERS].sort(() => Math.random() - 0.5);
     for (let i = 0; i < 3; i++) {
         const c = shuffled[i % shuffled.length];
-        // Preload ảnh
-        await loadImage(c.image);
         state.team.push({
             ...c,
             hp: c.maxHp,
@@ -482,22 +500,18 @@ async function initTeam() {
     updateUI();
 }
 
-// ==================== 8. RENDER TEAM (Cards with images) ====================
+// ==================== 8. RENDER TEAM (Cards) ====================
 function renderTeam() {
     teamArea.innerHTML = state.team.map((c, idx) => {
         const hpPercent = (c.hp / c.maxHp) * 100;
         const rarityColor = {
-            common: '#aabbdd',
-            rare: '#4a8aff',
-            epic: '#aa66ff',
-            legend: '#ffaa44'
+            common: '#aabbdd', rare: '#4a8aff', epic: '#aa66ff', legend: '#ffaa44'
         }[c.rarity] || '#ffffff';
         
         return `
-            <div class="card ${c.hp <= 0 ? 'dead' : ''}" 
-                 data-idx="${idx}"
-                 style="background-image: url('${c.image}'); border-color: ${rarityColor};">
+            <div class="card ${c.hp <= 0 ? 'dead' : ''}" data-idx="${idx}" style="border-color: ${rarityColor};">
                 <div class="rarity-badge" style="color:${rarityColor}; border-color:${rarityColor};">${c.rarity.toUpperCase()}</div>
+                <div class="avatar-svg" style="background: ${c.color}22;">${c.avatar || '👤'}</div>
                 <div class="overlay">
                     <div class="name">${c.name}</div>
                     <div class="stats">⚔️${c.atk} 🛡️${c.def}</div>
@@ -508,7 +522,6 @@ function renderTeam() {
         `;
     }).join('');
 
-    // Click để xem thông tin
     teamArea.querySelectorAll('.card').forEach(el => {
         el.addEventListener('click', () => {
             const idx = parseInt(el.dataset.idx);
@@ -518,7 +531,44 @@ function renderTeam() {
     });
 }
 
-// ==================== 9. SPAWN ENEMIES ====================
+// ==================== 9. GACHA ====================
+function doGacha(count) {
+    const cost = count === 1 ? 10 : 90;
+    if (state.gems < cost) {
+        gachaResult.innerHTML = '❌ Không đủ gem! Hãy kiếm thêm bằng cách đánh wave.';
+        return;
+    }
+    state.gems -= cost;
+    const results = [];
+    for (let i = 0; i < count; i++) {
+        const r = Math.random();
+        let rarity;
+        if (r < 0.05) rarity = 'legend';
+        else if (r < 0.20) rarity = 'epic';
+        else if (r < 0.55) rarity = 'rare';
+        else rarity = 'common';
+        const pool = CHARACTERS.filter(c => c.rarity === rarity);
+        const template = pool.length > 0 ? pick(pool) : pick(CHARACTERS);
+        const hero = {
+            ...template,
+            hp: template.maxHp,
+            maxHp: template.maxHp,
+            atk: template.atk + randInt(-2, 4),
+            def: template.def + randInt(-1, 3),
+        };
+        state.team.push(hero);
+        results.push(hero);
+    }
+    const names = results.map(h => 
+        `<span style="color:${ {common:'#aabbdd',rare:'#4a8aff',epic:'#aa66ff',legend:'#ffaa44'}[h.rarity] }">${h.avatar || '👤'} ${h.name} (${h.rarity})</span>`
+    ).join(', ');
+    gachaResult.innerHTML = `🎉 Nhận được: ${names}`;
+    addFloatingText(`🎉 +${count} tướng!`, 400, 100, '#ffd700');
+    renderTeam();
+    updateUI();
+}
+
+// ==================== 10. SPAWN ENEMIES ====================
 function spawnWave() {
     const wave = state.wave;
     const count = Math.min(2 + Math.floor(wave / 3), 6);
@@ -549,7 +599,7 @@ function spawnWave() {
         state.enemies.push({
             ...template,
             x: 600 + rand(-60, 60) + i * 30,
-            y: 100 + rand(-30, 30),
+            y: 80 + rand(-20, 20),
             w: 50,
             h: 60,
             hitFlash: 0,
@@ -559,7 +609,7 @@ function spawnWave() {
     log(`🌊 Wave ${wave}: ${state.enemies.length} kẻ thù xuất hiện!`);
 }
 
-// ==================== 10. BATTLE LOGIC ====================
+// ==================== 11. BATTLE LOGIC ====================
 function battleTurn() {
     if (state.isBattling) return;
     if (state.enemies.length === 0) { finishWave(); return; }
@@ -596,9 +646,11 @@ function battleTurn() {
             const idx = state.enemies.indexOf(target);
             if (idx > -1) {
                 state.enemies.splice(idx, 1);
-                state.gold += 10 + state.wave * 2;
-                log(`💀 ${target.name} bị đánh bại! +${10 + state.wave * 2} vàng`);
-                addFloatingText(`+${10 + state.wave * 2}💰`, target.x, target.y - 60, '#ffd700');
+                const reward = 10 + state.wave * 2;
+                state.gold += reward;
+                state.gems += Math.floor(reward / 3);
+                log(`💀 ${target.name} bị đánh bại! +${reward} vàng, +${Math.floor(reward/3)} gem`);
+                addFloatingText(`+${reward}💰`, target.x, target.y - 60, '#ffd700');
                 spawnParticles(target.x, target.y, '#ff6666', 20);
             }
         }
@@ -634,14 +686,15 @@ function battleTurn() {
     }
 }
 
-// ==================== 11. FINISH WAVE ====================
+// ==================== 12. FINISH WAVE ====================
 function finishWave() {
     state.wave++;
     state.wins++;
     const reward = 20 + state.wave * 5;
     state.gold += reward;
-    state.playerHp = Math.min(state.maxHp, state.playerHp + 30);
-    log(`🏆 Hoàn thành Wave ${state.wave-1}! +${reward} vàng`);
+    state.gems += Math.floor(reward / 4);
+    state.playerHp = Math.min(state.maxHp || 100, (state.playerHp || 100) + 30);
+    log(`🏆 Hoàn thành Wave ${state.wave-1}! +${reward} vàng, +${Math.floor(reward/4)} gem`);
     addFloatingText(`🏆 +${reward}💰`, 400, 100, '#ffd700');
     
     for (const c of state.team) {
@@ -657,7 +710,7 @@ function finishWave() {
     if (state.autoBattle) setTimeout(() => startWave(), 1500);
 }
 
-// ==================== 12. START / STOP WAVE ====================
+// ==================== 13. START / STOP ====================
 function startWave() {
     if (state.enemies.length > 0) return;
     if (state.team.every(c => c.hp <= 0)) {
@@ -689,7 +742,7 @@ function stopBattle() {
     battleStatus.textContent = '🟢 Sẵn sàng';
 }
 
-// ==================== 13. PARTICLES ====================
+// ==================== 14. PARTICLES ====================
 function spawnParticles(x, y, color, count = 10) {
     for (let i = 0; i < count; i++) {
         state.particles.push({
@@ -705,72 +758,54 @@ function spawnParticles(x, y, color, count = 10) {
     }
 }
 
-// ==================== 14. RENDER LOOP (Canvas with images) ====================
+// ==================== 15. RENDER LOOP (Canvas) ====================
 function render() {
     ctx.clearRect(0, 0, W, H);
-    
-    // Background
-    const grad = ctx.createRadialGradient(450, 150, 50, 450, 150, 400);
+    const grad = ctx.createRadialGradient(450, 140, 50, 450, 140, 400);
     grad.addColorStop(0, '#1a2a4a');
     grad.addColorStop(0.7, '#0a1520');
     grad.addColorStop(1, '#050a10');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = '#1a2a3a';
-    ctx.fillRect(0, 260, W, 4);
+    ctx.fillRect(0, 230, W, 4);
 
-    // ---- Draw enemies ----
+    // Draw enemies
     state.enemies.forEach(e => {
-        if (e.hitFlash > 0) {
-            ctx.shadowColor = '#ff4444';
-            ctx.shadowBlur = 30;
-        }
-        ctx.font = '48px sans-serif';
+        if (e.hitFlash > 0) { ctx.shadowColor = '#ff4444'; ctx.shadowBlur = 30; }
+        ctx.font = '44px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#fff';
         ctx.fillText(e.avatar, e.x, e.y + 20);
         ctx.shadowBlur = 0;
         ctx.fillStyle = '#ffdddd';
-        ctx.font = '14px sans-serif';
-        ctx.fillText(`${e.name} ❤️${Math.floor(e.hp)}`, e.x, e.y + 50);
+        ctx.font = '13px sans-serif';
+        ctx.fillText(`${e.name} ❤️${Math.floor(e.hp)}`, e.x, e.y + 48);
         ctx.fillStyle = '#222';
-        ctx.fillRect(e.x - 30, e.y + 56, 60, 8);
+        ctx.fillRect(e.x - 28, e.y + 52, 56, 6);
         const hpPct = Math.max(0, e.hp / e.maxHp);
         ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : (hpPct > 0.25 ? '#ffaa44' : '#f44336');
-        ctx.fillRect(e.x - 30, e.y + 56, 60 * hpPct, 8);
+        ctx.fillRect(e.x - 28, e.y + 52, 56 * hpPct, 6);
     });
 
-    // ---- Draw player team with images ----
+    // Draw player team (with SVG avatars)
     state.team.forEach((c, i) => {
         if (c.hp <= 0) return;
         const x = 70 + i * 110;
-        const y = 70 + i * 10;
-        
-        // Vẽ ảnh nhân vật
-        const img = state.imageCache[c.image];
-        if (img) {
-            ctx.drawImage(img, x - 35, y - 35, 70, 70);
-        } else {
-            // Fallback emoji
-            ctx.font = '40px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(c.avatar, x, y + 10);
-        }
-        
-        // Tên và HP
-        ctx.font = '12px sans-serif';
+        const y = 60 + i * 8;
+        drawSVGAvatar(ctx, x, y + 10, 50, c);
+        ctx.font = '11px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillStyle = '#88ddff';
-        ctx.fillText(c.name, x, y + 50);
+        ctx.fillText(c.name, x, y + 56);
         ctx.fillStyle = '#222';
-        ctx.fillRect(x - 25, y + 55, 50, 6);
+        ctx.fillRect(x - 22, y + 60, 44, 5);
         const hpPct = Math.max(0, c.hp / c.maxHp);
         ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : (hpPct > 0.25 ? '#ffaa44' : '#f44336');
-        ctx.fillRect(x - 25, y + 55, 50 * hpPct, 6);
+        ctx.fillRect(x - 22, y + 60, 44 * hpPct, 5);
     });
 
-    // ---- Particles ----
+    // Particles
     state.particles.forEach(p => {
         const alpha = p.life / p.maxLife;
         ctx.globalAlpha = alpha;
@@ -781,11 +816,11 @@ function render() {
     });
     ctx.globalAlpha = 1;
 
-    // VS text
-    ctx.font = 'bold 28px sans-serif';
+    // VS
+    ctx.font = 'bold 26px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,200,100,0.15)';
-    ctx.fillText('⚔️ VS ⚔️', 400, 140);
+    ctx.fillStyle = 'rgba(255,200,100,0.12)';
+    ctx.fillText('⚔️ VS ⚔️', 400, 120);
 
     // Update particles
     for (let i = state.particles.length - 1; i >= 0; i--) {
@@ -800,17 +835,17 @@ function render() {
     requestAnimationFrame(render);
 }
 
-// ==================== 15. UI UPDATE ====================
+// ==================== 16. UI UPDATE ====================
 function updateUI() {
     goldSpan.textContent = state.gold;
+    gemSpan.textContent = state.gems;
     waveSpan.textContent = state.wave;
     winSpan.textContent = state.wins;
-    hpSpan.textContent = `${state.playerHp}/${state.maxHp}`;
     waveNum.textContent = state.wave;
     enemyCount.textContent = state.enemies.length;
 }
 
-// ==================== 16. FLOATING TEXT ====================
+// ==================== 17. FLOATING TEXT ====================
 function addFloatingText(text, x, y, color = '#ffd700') {
     const el = document.createElement('div');
     el.className = 'floatText';
@@ -822,7 +857,7 @@ function addFloatingText(text, x, y, color = '#ffd700') {
     setTimeout(() => el.remove(), 1300);
 }
 
-// ==================== 17. LOG ====================
+// ==================== 18. LOG ====================
 function log(msg) {
     state.battleLog.push('⚔️ ' + msg);
     if (state.battleLog.length > 30) state.battleLog.shift();
@@ -830,14 +865,13 @@ function log(msg) {
     logDiv.scrollTop = logDiv.scrollHeight;
 }
 
-// ==================== 18. RESET ====================
+// ==================== 19. RESET ====================
 function resetGame() {
     stopBattle();
-    state.gold = 100;
+    state.gold = 200;
+    state.gems = 50;
     state.wave = 1;
     state.wins = 0;
-    state.playerHp = 100;
-    state.maxHp = 100;
     state.enemies = [];
     state.battleLog = [];
     state.isBattling = false;
@@ -851,7 +885,20 @@ function resetGame() {
     renderTeam();
 }
 
-// ==================== 19. EVENT LISTENERS ====================
+// ==================== 20. TAB SWITCHING ====================
+function switchTab(tab) {
+    state.currentTab = tab;
+    document.querySelectorAll('#sidebar .menu-item').forEach(el => el.classList.remove('active'));
+    document.querySelector(`#sidebar .menu-item[data-tab="${tab}"]`)?.classList.add('active');
+    
+    if (tab === 'gacha') {
+        gachaPanel.classList.add('active');
+    } else {
+        gachaPanel.classList.remove('active');
+    }
+}
+
+// ==================== 21. EVENT LISTENERS ====================
 startBtn.addEventListener('click', startWave);
 resetBtn.addEventListener('click', resetGame);
 
@@ -873,17 +920,23 @@ canvas.addEventListener('click', () => {
     if (!state.autoBattle && state.enemies.length > 0) battleTurn();
 });
 
-// ==================== 20. START GAME ====================
-initTeam().then(() => {
-    render();
-    updateUI();
-    log('🎮 Anime Card Brawler đã sẵn sàng!');
-    log('📌 Nhấn "Bắt đầu Wave" để chiến đấu.');
-    console.log('Team:', state.team);
+document.getElementById('gacha1Btn').addEventListener('click', () => doGacha(1));
+document.getElementById('gacha10Btn').addEventListener('click', () => doGacha(10));
+
+document.querySelectorAll('#sidebar .menu-item').forEach(el => {
+    el.addEventListener('click', () => {
+        const tab = el.dataset.tab;
+        switchTab(tab);
+    });
 });
 
-console.log('%c Anime Card Brawler - Ảnh nhân vật ', 'background: #2a4a7a; color: white; font-size: 20px; padding: 8px;');
-console.log('💡 Hướng dẫn: Thêm ảnh nhân vật vào thư mục assets/characters/');
+// ==================== 22. START ====================
+initTeam();
+render();
+updateUI();
+log('🎮 Anime Card Brawler với Gacha đã sẵn sàng!');
+log('📌 Nhấn "Bắt đầu Wave" để chiến đấu, "Gacha" để rút tướng mới.');
+console.log('Team:', state.team);
 </script>
 </body>
 </html>
