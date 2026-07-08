@@ -4,16 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚔️ Anime Card Brawler</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Tất cả CSS sẽ ở đây để tiện quản lý */
+    </style>
 </head>
 <body>
+    <!-- BỐ CỤC Y CHANG GAME GỐC -->
     <div id="game-container">
-        <h1>⚔️ Anime Card Brawler</h1>
-        <div class="subtitle">🎴 Chiến đấu theo lượt - Sưu tầm thẻ bài - Đánh bại mọi kẻ thù!</div>
-        <div id="game-area">
-            <!-- Game sẽ hiển thị ở đây -->
+        <!-- 1. Thanh tiêu đề (giống game) -->
+        <div id="header">
+            <h1>⚔️ Anime Card Brawler</h1>
+            <p id="subtitle">🎴 BATTLE · COLLECT · WIN</p>
+        </div>
+
+        <!-- 2. Thanh thông tin người chơi (giống game) -->
+        <div id="player-stats">
+            <div id="health-section">
+                <span id="hp-icon">❤️</span>
+                <div id="health-bar">
+                    <div id="health-fill"></div>
+                </div>
+                <span id="hp-text">1000/1000</span>
+            </div>
+            <div id="stats-right">
+                <span>⭐ <span id="wave-display">1</span></span>
+                <span>💰 <span id="gold-display">0</span></span>
+                <span>🔥 <span id="combo-display">0</span></span>
+            </div>
+        </div>
+
+        <!-- 3. Khu vực thông báo (giống game) -->
+        <div id="message-box">
+            <span id="message-text">Chào mừng! Hãy bắt đầu hành trình!</span>
+        </div>
+
+        <!-- 4. KHU VỰC CHIẾN ĐẤU (Phần QUAN TRỌNG NHẤT - giống game) -->
+        <div id="battle-area">
+            <!-- 4a. Hàng QUÁI VẬT (phía trên) -->
+            <div id="enemy-row">
+                <div id="enemy-container">
+                    <!-- Quái vật sẽ hiện ở đây -->
+                </div>
+            </div>
+
+            <!-- 4b. Hàng THẺ CỦA BẠN (phía dưới) -->
+            <div id="player-row">
+                <div id="player-container">
+                    <!-- Thẻ của bạn sẽ hiện ở đây -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Hàng TAY BÀI (phía dưới cùng - giống game) -->
+        <div id="hand-area">
+            <div id="hand-container">
+                <!-- Bài trên tay sẽ hiện ở đây -->
+            </div>
+        </div>
+
+        <!-- 6. Nút điều khiển (giống game) -->
+        <div id="controls">
+            <button onclick="game.drawCard()">🃏 Rút bài</button>
+            <button onclick="game.startChallenge('jujutsu')" class="btn-challenge" style="background:#6b21a5;">👁️ JJK</button>
+            <button onclick="game.startChallenge('naruto')" class="btn-challenge" style="background:#e67e22;">🍥 Naruto</button>
+            <button onclick="game.startChallenge('onepiece')" class="btn-challenge" style="background:#e74c3c;">🏴‍☠️ OP</button>
+            <button onclick="game.startChallenge('demonslayer')" class="btn-challenge" style="background:#2ecc71;">🌊 DS</button>
+            <button onclick="game.restartGame()" class="btn-danger">🔄 Chơi lại</button>
         </div>
     </div>
-    <script src="game.js"></script>
+
+    <script>
+        // TOÀN BỘ JAVASCRIPT SẼ Ở ĐÂY
+    </script>
 </body>
 </html>
