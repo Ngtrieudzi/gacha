@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Anime Card Brawler</title>
+    <title>Anime Card Brawler - Ảnh nhân vật</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body {
@@ -13,6 +13,7 @@
             align-items: center;
             min-height: 100vh;
             font-family: 'Segoe UI', Arial, sans-serif;
+            padding: 16px;
         }
         #gameContainer {
             background: #111827;
@@ -23,6 +24,7 @@
             max-width: 1100px;
             width: 100%;
         }
+        /* ===== TOP BAR ===== */
         #topBar {
             display: flex;
             justify-content: space-between;
@@ -47,11 +49,8 @@
             gap: 6px;
         }
         #topBar .stat span { color: #ffd966; }
-        #mainUI {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+
+        /* ===== BATTLE AREA ===== */
         #battleArea {
             background: #0a1220;
             border-radius: 24px;
@@ -101,6 +100,83 @@
         #controls button:hover { background: #3a6a9a; transform: translateY(-2px); box-shadow: 0 6px 0 #0a1a2a; }
         #controls button:active { transform: translateY(4px); box-shadow: 0 1px 0 #0a1a2a; }
         #controls button:disabled { opacity: 0.4; transform: translateY(4px); box-shadow: 0 1px 0 #0a1a2a; }
+
+        /* ===== TEAM AREA (Cards with images) ===== */
+        #teamArea {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            justify-content: center;
+        }
+        .card {
+            width: 140px;
+            height: 210px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid #2f4a7a;
+            transition: all 0.3s;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .card:hover { transform: scale(1.05); border-color: #4a8aff; }
+        .card.dead { opacity: 0.4; border-color: #6a2a2a; filter: grayscale(0.8); }
+        .card.boss { border-color: #ff4444; box-shadow: 0 0 30px #ff4444; }
+        .card .overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px 8px 8px;
+            color: white;
+            text-align: center;
+        }
+        .card .name {
+            font-weight: bold;
+            font-size: 15px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+        }
+        .card .stats {
+            font-size: 12px;
+            opacity: 0.9;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+        .card .hpBar {
+            background: rgba(0,0,0,0.7);
+            height: 6px;
+            border-radius: 6px;
+            margin: 4px 0;
+        }
+        .card .hpBar .fill {
+            height: 100%;
+            border-radius: 6px;
+            background: #4caf50;
+            transition: width 0.3s;
+        }
+        .card .rarity-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 2px 10px;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #ffd700;
+            color: #ffd700;
+        }
+        .card .avatar-fallback {
+            display: none;
+            font-size: 48px;
+            text-align: center;
+            padding-top: 30px;
+        }
+
+        /* ===== LOG ===== */
         #logArea {
             background: #0a1220;
             border-radius: 16px;
@@ -114,31 +190,8 @@
         }
         #logArea::-webkit-scrollbar { width: 4px; }
         #logArea::-webkit-scrollbar-thumb { background: #2a4a7a; border-radius: 10px; }
-        #teamArea {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 12px;
-            justify-content: center;
-        }
-        .card {
-            background: #1a2540;
-            border-radius: 16px;
-            padding: 10px;
-            border: 2px solid #2f4a7a;
-            width: 120px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .card:hover { transform: scale(1.05); border-color: #4a8aff; }
-        .card .avatar { font-size: 36px; display: block; }
-        .card .name { font-weight: bold; color: #fff; font-size: 14px; }
-        .card .stats { font-size: 11px; color: #aabbdd; }
-        .card .hpBar { background: #333; height: 6px; border-radius: 6px; margin: 4px 0; }
-        .card .hpBar .fill { height: 100%; border-radius: 6px; background: #4caf50; }
-        .card.dead { opacity: 0.4; border-color: #6a2a2a; }
-        .card.boss { border-color: #ff4444; box-shadow: 0 0 20px #ff4444; }
+
+        /* ===== FLOATING TEXT ===== */
         .floatText {
             position: fixed;
             font-weight: bold;
@@ -153,572 +206,684 @@
             0% { opacity: 1; transform: translateY(0) scale(1); }
             100% { opacity: 0; transform: translateY(-100px) scale(1.3); }
         }
+
         @media (max-width: 600px) {
-            .card { width: 90px; padding: 6px; }
-            .card .avatar { font-size: 28px; }
+            .card { width: 100px; height: 160px; }
+            .card .name { font-size: 12px; }
+            .card .stats { font-size: 10px; }
         }
     </style>
 </head>
 <body>
 <div id="gameContainer">
+    <!-- TOP BAR -->
     <div id="topBar">
         <div class="stat">💰 <span id="goldDisplay">100</span></div>
         <div class="stat">⚔️ <span id="waveDisplay">1</span></div>
         <div class="stat">🏆 <span id="winDisplay">0</span></div>
         <div class="stat">❤️ <span id="hpDisplay">100/100</span></div>
     </div>
-    <div id="mainUI">
-        <div id="battleArea">
-            <canvas id="battleCanvas" width="900" height="320"></canvas>
-            <div id="waveInfo">
-                <span>🌊 Wave <span id="waveNum">1</span></span>
-                <span>👾 Kẻ thù: <span id="enemyCount">0</span></span>
-                <span>⚡ Trạng thái: <span id="battleStatus">🟢 Sẵn sàng</span></span>
-            </div>
-            <div id="controls">
-                <button id="startWaveBtn">⚔️ Bắt đầu Wave</button>
-                <button id="autoBattleBtn">🤖 Tự động</button>
-                <button id="resetBtn">🔄 Reset</button>
-            </div>
+
+    <!-- BATTLE AREA -->
+    <div id="battleArea">
+        <canvas id="battleCanvas" width="900" height="320"></canvas>
+        <div id="waveInfo">
+            <span>🌊 Wave <span id="waveNum">1</span></span>
+            <span>👾 Kẻ thù: <span id="enemyCount">0</span></span>
+            <span>⚡ Trạng thái: <span id="battleStatus">🟢 Sẵn sàng</span></span>
         </div>
-        <div id="teamArea"></div>
-        <div id="logArea">⚔️ Chào mừng! Hãy bắt đầu wave đầu tiên.</div>
+        <div id="controls">
+            <button id="startWaveBtn">⚔️ Bắt đầu Wave</button>
+            <button id="autoBattleBtn">🤖 Tự động</button>
+            <button id="resetBtn">🔄 Reset</button>
+        </div>
     </div>
+
+    <!-- TEAM AREA -->
+    <div id="teamArea"></div>
+
+    <!-- LOG -->
+    <div id="logArea">⚔️ Chào mừng! Hãy bắt đầu wave đầu tiên.</div>
 </div>
 
 <script>
-    // ============================================================
-    //  ANIME CARD BRAWLER - GAME ENGINE
-    // ============================================================
+// ================================================================
+//  ANIME CARD BRAWLER - WITH CHARACTER IMAGES
+// ================================================================
 
-    // ----- DANH SÁCH NHÂN VẬT (CARD) -----
-    const CHARACTERS = [
-        { id: 'naruto', name: 'Naruto', avatar: '🍥', atk: 14, def: 6, hp: 90, maxHp: 90, element: 'wind', type: 'ninja', rarity: 'rare', skill: 'Rasengan', skillDmg: 22 },
-        { id: 'sasuke', name: 'Sasuke', avatar: '🌀', atk: 16, def: 5, hp: 85, maxHp: 85, element: 'fire', type: 'shinobi', rarity: 'epic', skill: 'Chidori', skillDmg: 28 },
-        { id: 'luffy', name: 'Luffy', avatar: '🏴‍☠️', atk: 15, def: 7, hp: 100, maxHp: 100, element: 'water', type: 'pirate', rarity: 'epic', skill: 'Gomu Gomu', skillDmg: 25 },
-        { id: 'zoro', name: 'Zoro', avatar: '🗡️', atk: 18, def: 4, hp: 95, maxHp: 95, element: 'wind', type: 'swordsman', rarity: 'epic', skill: 'Santoryu', skillDmg: 30 },
-        { id: 'gojo', name: 'Gojo', avatar: '👁️', atk: 20, def: 8, hp: 110, maxHp: 110, element: 'light', type: 'sorcerer', rarity: 'legend', skill: 'Domain', skillDmg: 40 },
-        { id: 'sukuna', name: 'Sukuna', avatar: '👹', atk: 22, def: 6, hp: 120, maxHp: 120, element: 'dark', type: 'curse', rarity: 'legend', skill: 'Malevolent Shrine', skillDmg: 45 },
-        { id: 'tanjiro', name: 'Tanjiro', avatar: '🔥', atk: 16, def: 8, hp: 95, maxHp: 95, element: 'fire', type: 'slayer', rarity: 'rare', skill: 'Hinokami', skillDmg: 26 },
-        { id: 'nezuko', name: 'Nezuko', avatar: '🎀', atk: 14, def: 10, hp: 90, maxHp: 90, element: 'dark', type: 'demon', rarity: 'rare', skill: 'Blood Burst', skillDmg: 20 },
-        { id: 'asta', name: 'Asta', avatar: '📖', atk: 17, def: 7, hp: 100, maxHp: 100, element: 'light', type: 'mage', rarity: 'epic', skill: 'Anti-Magic', skillDmg: 28 },
-        { id: 'meliodas', name: 'Meliodas', avatar: '⚔️', atk: 21, def: 9, hp: 115, maxHp: 115, element: 'dark', type: 'demon', rarity: 'legend', skill: 'Full Counter', skillDmg: 38 },
-        { id: 'escanor', name: 'Escanor', avatar: '☀️', atk: 25, def: 5, hp: 130, maxHp: 130, element: 'fire', type: 'lion', rarity: 'legend', skill: 'Cruel Sun', skillDmg: 50 },
-        { id: 'rengoku', name: 'Rengoku', avatar: '🔥', atk: 19, def: 7, hp: 105, maxHp: 105, element: 'fire', type: 'flame', rarity: 'epic', skill: 'Flame Breathing', skillDmg: 32 },
-    ];
-
-    // ----- ENEMY TEMPLATES -----
-    const ENEMIES = [
-        { name: 'Goblin', avatar: '👺', atk: 8, def: 3, hp: 30, maxHp: 30, type: 'normal' },
-        { name: 'Skeleton', avatar: '💀', atk: 10, def: 4, hp: 40, maxHp: 40, type: 'normal' },
-        { name: 'Shadow', avatar: '👻', atk: 12, def: 5, hp: 50, maxHp: 50, type: 'normal' },
-        { name: 'Demon', avatar: '😈', atk: 15, def: 6, hp: 65, maxHp: 65, type: 'elite' },
-        { name: 'Boss', avatar: '🐲', atk: 22, def: 10, hp: 150, maxHp: 150, type: 'boss' },
-    ];
-
-    // ============================================================
-    //  GAME STATE
-    // ============================================================
-    const state = {
-        gold: 100,
-        wave: 1,
-        wins: 0,
-        playerHp: 100,
-        maxHp: 100,
-        team: [],          // các card người chơi
-        enemies: [],       // kẻ thù hiện tại
-        battleLog: [],
-        isBattling: false,
-        autoBattle: false,
-        battleInterval: null,
-        frame: 0,
-        // các hiệu ứng
-        particles: [],
-        floatingTexts: [],
-    };
-
-    // ----- DOM refs -----
-    const canvas = document.getElementById('battleCanvas');
-    const ctx = canvas.getContext('2d');
-    const W = 900, H = 320;
-
-    const goldSpan = document.getElementById('goldDisplay');
-    const waveSpan = document.getElementById('waveDisplay');
-    const winSpan = document.getElementById('winDisplay');
-    const hpSpan = document.getElementById('hpDisplay');
-    const waveNum = document.getElementById('waveNum');
-    const enemyCount = document.getElementById('enemyCount');
-    const battleStatus = document.getElementById('battleStatus');
-    const logDiv = document.getElementById('logArea');
-    const teamArea = document.getElementById('teamArea');
-    const startBtn = document.getElementById('startWaveBtn');
-    const autoBtn = document.getElementById('autoBattleBtn');
-    const resetBtn = document.getElementById('resetBtn');
-
-    // ============================================================
-    //  UTILITY
-    // ============================================================
-    function rand(min, max) { return Math.random() * (max - min) + min; }
-    function randInt(min, max) { return Math.floor(rand(min, max+1)); }
-    function pick(arr) { return arr[randInt(0, arr.length-1)]; }
-    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
-    function addFloatingText(text, x, y, color = '#ffd700') {
-        const el = document.createElement('div');
-        el.className = 'floatText';
-        el.textContent = text;
-        el.style.left = x + 'px';
-        el.style.top = y + 'px';
-        el.style.color = color;
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 1300);
+// ==================== 1. CHARACTER DATA WITH IMAGES ====================
+// LƯU Ý: Thay đường dẫn ảnh bằng ảnh thật của bạn.
+// Ảnh nên để trong thư mục assets/characters/ với tên trùng với id.
+const CHARACTERS = [
+    { 
+        id: 'naruto', 
+        name: 'Naruto Uzumaki', 
+        image: 'assets/characters/naruto.png', // Đường dẫn ảnh
+        avatar: '🍥', // Fallback nếu ảnh lỗi
+        atk: 14, def: 6, hp: 90, maxHp: 90, 
+        element: 'wind', type: 'ninja', rarity: 'rare', 
+        skill: 'Rasengan', skillDmg: 22 
+    },
+    { 
+        id: 'sasuke', 
+        name: 'Sasuke Uchiha', 
+        image: 'assets/characters/sasuke.png',
+        avatar: '🌀',
+        atk: 16, def: 5, hp: 85, maxHp: 85, 
+        element: 'fire', type: 'shinobi', rarity: 'epic', 
+        skill: 'Chidori', skillDmg: 28 
+    },
+    { 
+        id: 'luffy', 
+        name: 'Monkey D. Luffy', 
+        image: 'assets/characters/luffy.png',
+        avatar: '🏴‍☠️',
+        atk: 15, def: 7, hp: 100, maxHp: 100, 
+        element: 'water', type: 'pirate', rarity: 'epic', 
+        skill: 'Gomu Gomu', skillDmg: 25 
+    },
+    { 
+        id: 'zoro', 
+        name: 'Roronoa Zoro', 
+        image: 'assets/characters/zoro.png',
+        avatar: '🗡️',
+        atk: 18, def: 4, hp: 95, maxHp: 95, 
+        element: 'wind', type: 'swordsman', rarity: 'epic', 
+        skill: 'Santoryu', skillDmg: 30 
+    },
+    { 
+        id: 'gojo', 
+        name: 'Satoru Gojo', 
+        image: 'assets/characters/gojo.png',
+        avatar: '👁️',
+        atk: 20, def: 8, hp: 110, maxHp: 110, 
+        element: 'light', type: 'sorcerer', rarity: 'legend', 
+        skill: 'Domain', skillDmg: 40 
+    },
+    { 
+        id: 'sukuna', 
+        name: 'Ryomen Sukuna', 
+        image: 'assets/characters/sukuna.png',
+        avatar: '👹',
+        atk: 22, def: 6, hp: 120, maxHp: 120, 
+        element: 'dark', type: 'curse', rarity: 'legend', 
+        skill: 'Malevolent Shrine', skillDmg: 45 
+    },
+    { 
+        id: 'tanjiro', 
+        name: 'Tanjiro Kamado', 
+        image: 'assets/characters/tanjiro.png',
+        avatar: '🔥',
+        atk: 16, def: 8, hp: 95, maxHp: 95, 
+        element: 'fire', type: 'slayer', rarity: 'rare', 
+        skill: 'Hinokami', skillDmg: 26 
+    },
+    { 
+        id: 'nezuko', 
+        name: 'Nezuko Kamado', 
+        image: 'assets/characters/nezuko.png',
+        avatar: '🎀',
+        atk: 14, def: 10, hp: 90, maxHp: 90, 
+        element: 'dark', type: 'demon', rarity: 'rare', 
+        skill: 'Blood Burst', skillDmg: 20 
+    },
+    { 
+        id: 'asta', 
+        name: 'Asta', 
+        image: 'assets/characters/asta.png',
+        avatar: '📖',
+        atk: 17, def: 7, hp: 100, maxHp: 100, 
+        element: 'light', type: 'mage', rarity: 'epic', 
+        skill: 'Anti-Magic', skillDmg: 28 
+    },
+    { 
+        id: 'meliodas', 
+        name: 'Meliodas', 
+        image: 'assets/characters/meliodas.png',
+        avatar: '⚔️',
+        atk: 21, def: 9, hp: 115, maxHp: 115, 
+        element: 'dark', type: 'demon', rarity: 'legend', 
+        skill: 'Full Counter', skillDmg: 38 
+    },
+    { 
+        id: 'escanor', 
+        name: 'Escanor', 
+        image: 'assets/characters/escanor.png',
+        avatar: '☀️',
+        atk: 25, def: 5, hp: 130, maxHp: 130, 
+        element: 'fire', type: 'lion', rarity: 'legend', 
+        skill: 'Cruel Sun', skillDmg: 50 
+    },
+    { 
+        id: 'rengoku', 
+        name: 'Kyojuro Rengoku', 
+        image: 'assets/characters/rengoku.png',
+        avatar: '🔥',
+        atk: 19, def: 7, hp: 105, maxHp: 105, 
+        element: 'fire', type: 'flame', rarity: 'epic', 
+        skill: 'Flame Breathing', skillDmg: 32 
+    },
+    {
+        id: 'midoriya',
+        name: 'Izuku Midoriya',
+        image: 'assets/characters/midoriya.png',
+        avatar: '💚',
+        atk: 16, def: 6, hp: 95, maxHp: 95,
+        element: 'light', type: 'hero', rarity: 'rare',
+        skill: 'One For All', skillDmg: 28
     }
+];
 
-    function log(msg) {
-        state.battleLog.push('⚔️ ' + msg);
-        if (state.battleLog.length > 30) state.battleLog.shift();
-        logDiv.innerHTML = state.battleLog.slice(-8).join('<br>');
-        logDiv.scrollTop = logDiv.scrollHeight;
-    }
+// ==================== 2. ENEMY TEMPLATES ====================
+const ENEMIES = [
+    { name: 'Goblin', avatar: '👺', atk: 8, def: 3, hp: 30, maxHp: 30, type: 'normal' },
+    { name: 'Skeleton', avatar: '💀', atk: 10, def: 4, hp: 40, maxHp: 40, type: 'normal' },
+    { name: 'Shadow', avatar: '👻', atk: 12, def: 5, hp: 50, maxHp: 50, type: 'normal' },
+    { name: 'Demon', avatar: '😈', atk: 15, def: 6, hp: 65, maxHp: 65, type: 'elite' },
+    { name: 'Boss', avatar: '🐲', atk: 22, def: 10, hp: 150, maxHp: 150, type: 'boss' },
+];
 
-    // ============================================================
-    //  INIT TEAM (3 cards)
-    // ============================================================
-    function initTeam() {
-        state.team = [];
-        // Chọn 3 nhân vật ngẫu nhiên
-        const shuffled = [...CHARACTERS].sort(() => Math.random() - 0.5);
-        for (let i = 0; i < 3; i++) {
-            const c = shuffled[i % shuffled.length];
-            state.team.push({
-                ...c,
-                hp: c.maxHp,
-                maxHp: c.maxHp,
-                atk: c.atk + randInt(-2, 4),
-                def: c.def + randInt(-1, 3),
-            });
+// ==================== 3. GAME STATE ====================
+const state = {
+    gold: 100,
+    wave: 1,
+    wins: 0,
+    playerHp: 100,
+    maxHp: 100,
+    team: [],
+    enemies: [],
+    battleLog: [],
+    isBattling: false,
+    autoBattle: false,
+    battleInterval: null,
+    particles: [],
+    floatingTexts: [],
+    // Cache ảnh
+    imageCache: {},
+};
+
+// ==================== 4. DOM REFS ====================
+const canvas = document.getElementById('battleCanvas');
+const ctx = canvas.getContext('2d');
+const W = 900, H = 320;
+
+const goldSpan = document.getElementById('goldDisplay');
+const waveSpan = document.getElementById('waveDisplay');
+const winSpan = document.getElementById('winDisplay');
+const hpSpan = document.getElementById('hpDisplay');
+const waveNum = document.getElementById('waveNum');
+const enemyCount = document.getElementById('enemyCount');
+const battleStatus = document.getElementById('battleStatus');
+const logDiv = document.getElementById('logArea');
+const teamArea = document.getElementById('teamArea');
+const startBtn = document.getElementById('startWaveBtn');
+const autoBtn = document.getElementById('autoBattleBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+// ==================== 5. UTILITY ====================
+function rand(min, max) { return Math.random() * (max - min) + min; }
+function randInt(min, max) { return Math.floor(rand(min, max+1)); }
+function pick(arr) { return arr[randInt(0, arr.length-1)]; }
+
+// ==================== 6. IMAGE LOADER WITH CACHE ====================
+function loadImage(src) {
+    return new Promise((resolve) => {
+        if (state.imageCache[src]) {
+            resolve(state.imageCache[src]);
+            return;
         }
-        // Đảm bảo có ít nhất 1 tướng
-        if (state.team.length === 0) {
-            state.team.push({ ...CHARACTERS[0], hp: CHARACTERS[0].maxHp, maxHp: CHARACTERS[0].maxHp });
-        }
-        renderTeam();
-        updateUI();
-    }
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            state.imageCache[src] = img;
+            resolve(img);
+        };
+        img.onerror = () => {
+            // Tạo ảnh fallback với emoji
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#2a2a4a';
+            ctx.fillRect(0, 0, 128, 128);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '60px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            // Lấy emoji từ tên (nếu có)
+            const char = CHARACTERS.find(c => c.image === src);
+            ctx.fillText(char ? char.avatar : '❓', 64, 64);
+            const fallbackImg = new Image();
+            fallbackImg.src = canvas.toDataURL();
+            state.imageCache[src] = fallbackImg;
+            resolve(fallbackImg);
+        };
+        img.src = src;
+    });
+}
 
-    // ============================================================
-    //  RENDER TEAM
-    // ============================================================
-    function renderTeam() {
-        teamArea.innerHTML = state.team.map((c, idx) => `
-            <div class="card ${c.hp <= 0 ? 'dead' : ''}" data-idx="${idx}">
-                <span class="avatar">${c.avatar}</span>
-                <div class="name">${c.name}</div>
-                <div class="stats">⚔️${c.atk} 🛡️${c.def}</div>
-                <div class="hpBar"><div class="fill" style="width:${(c.hp/c.maxHp)*100}%"></div></div>
-                <div class="stats">❤️ ${Math.floor(c.hp)}/${c.maxHp}</div>
-                <div class="stats">${c.rarity.toUpperCase()} | ${c.element}</div>
+// ==================== 7. INIT TEAM ====================
+async function initTeam() {
+    state.team = [];
+    const shuffled = [...CHARACTERS].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < 3; i++) {
+        const c = shuffled[i % shuffled.length];
+        // Preload ảnh
+        await loadImage(c.image);
+        state.team.push({
+            ...c,
+            hp: c.maxHp,
+            maxHp: c.maxHp,
+            atk: c.atk + randInt(-2, 4),
+            def: c.def + randInt(-1, 3),
+        });
+    }
+    renderTeam();
+    updateUI();
+}
+
+// ==================== 8. RENDER TEAM (Cards with images) ====================
+function renderTeam() {
+    teamArea.innerHTML = state.team.map((c, idx) => {
+        const hpPercent = (c.hp / c.maxHp) * 100;
+        const rarityColor = {
+            common: '#aabbdd',
+            rare: '#4a8aff',
+            epic: '#aa66ff',
+            legend: '#ffaa44'
+        }[c.rarity] || '#ffffff';
+        
+        return `
+            <div class="card ${c.hp <= 0 ? 'dead' : ''}" 
+                 data-idx="${idx}"
+                 style="background-image: url('${c.image}'); border-color: ${rarityColor};">
+                <div class="rarity-badge" style="color:${rarityColor}; border-color:${rarityColor};">${c.rarity.toUpperCase()}</div>
+                <div class="overlay">
+                    <div class="name">${c.name}</div>
+                    <div class="stats">⚔️${c.atk} 🛡️${c.def}</div>
+                    <div class="hpBar"><div class="fill" style="width:${hpPercent}%; background:${hpPercent > 50 ? '#4caf50' : hpPercent > 25 ? '#ffaa44' : '#f44336'}"></div></div>
+                    <div class="stats">❤️ ${Math.floor(c.hp)}/${c.maxHp}</div>
+                </div>
             </div>
-        `).join('');
-        // Click để xem thông tin
-        teamArea.querySelectorAll('.card').forEach(el => {
-            el.addEventListener('click', () => {
-                const idx = parseInt(el.dataset.idx);
-                const c = state.team[idx];
-                if (c) log(`${c.name}: ${c.skill} (${c.skillDmg} dmg) | ${c.type}`);
-            });
+        `;
+    }).join('');
+
+    // Click để xem thông tin
+    teamArea.querySelectorAll('.card').forEach(el => {
+        el.addEventListener('click', () => {
+            const idx = parseInt(el.dataset.idx);
+            const c = state.team[idx];
+            if (c) log(`${c.name}: ${c.skill} (${c.skillDmg} dmg) | ${c.type} | ${c.element}`);
         });
-    }
-
-    // ============================================================
-    //  SPAWN ENEMIES FOR WAVE
-    // ============================================================
-    function spawnWave() {
-        const wave = state.wave;
-        const count = Math.min(2 + Math.floor(wave / 3), 6);
-        state.enemies = [];
-        for (let i = 0; i < count; i++) {
-            let template;
-            const r = Math.random();
-            if (wave % 10 === 0 && i === 0) {
-                template = { ...ENEMIES[4] }; // boss
-                template.hp = 120 + wave * 5;
-                template.maxHp = template.hp;
-                template.atk = 18 + wave * 1.2;
-                template.def = 6 + wave * 0.5;
-                template.name = `Boss Lv.${wave}`;
-            } else if (r < 0.2 && wave > 5) {
-                template = { ...ENEMIES[3] }; // elite
-                template.hp = 50 + wave * 3;
-                template.maxHp = template.hp;
-                template.atk = 12 + wave * 0.8;
-                template.def = 4 + wave * 0.4;
-            } else {
-                template = { ...pick(ENEMIES.slice(0,3)) };
-                template.hp = 25 + wave * 2.5;
-                template.maxHp = template.hp;
-                template.atk = 8 + wave * 0.6;
-                template.def = 3 + wave * 0.3;
-            }
-            state.enemies.push({
-                ...template,
-                x: 600 + rand(-60, 60) + i * 30,
-                y: 100 + rand(-30, 30),
-                w: 50,
-                h: 60,
-                hitFlash: 0,
-            });
-        }
-        enemyCount.textContent = state.enemies.length;
-        log(`🌊 Wave ${wave}: ${state.enemies.length} kẻ thù xuất hiện!`);
-    }
-
-    // ============================================================
-    //  BATTLE LOGIC - TURN BASED
-    // ============================================================
-    function battleTurn() {
-        if (state.isBattling) return;
-        if (state.enemies.length === 0) {
-            // Win wave
-            finishWave();
-            return;
-        }
-        if (state.team.every(c => c.hp <= 0)) {
-            log('💀 Toàn đội đã ngã!');
-            battleStatus.textContent = '💀 Thất bại';
-            stopBattle();
-            return;
-        }
-
-        state.isBattling = true;
-        battleStatus.textContent = '⚔️ Đang chiến đấu...';
-
-        // ----- Player team attack -----
-        for (const ally of state.team) {
-            if (ally.hp <= 0) continue;
-            if (state.enemies.length === 0) break;
-            const target = state.enemies[0]; // tấn công kẻ đầu tiên
-            // Tính sát thương
-            const baseDmg = Math.max(1, ally.atk - target.def + randInt(-2, 5));
-            // Kỹ năng: 30% chance
-            let dmg = baseDmg;
-            let skillUsed = false;
-            if (Math.random() < 0.3) {
-                dmg = Math.floor(ally.skillDmg * (0.8 + Math.random() * 0.4) - target.def * 0.5);
-                dmg = Math.max(1, dmg);
-                skillUsed = true;
-                log(`🔥 ${ally.name} dùng ${ally.skill} gây ${dmg} sát thương!`);
-                addFloatingText(`💥 ${dmg}`, target.x - 20, target.y - 40, '#ff8844');
-                // Hiệu ứng đặc biệt
-                spawnParticles(target.x, target.y, '#ffaa44', 12);
-            } else {
-                log(`⚔️ ${ally.name} tấn công gây ${dmg} sát thương.`);
-                addFloatingText(`-${dmg}`, target.x - 20, target.y - 40, '#88ddff');
-            }
-            target.hp -= dmg;
-            target.hitFlash = 8;
-
-            if (target.hp <= 0) {
-                const idx = state.enemies.indexOf(target);
-                if (idx > -1) {
-                    state.enemies.splice(idx, 1);
-                    state.gold += 10 + state.wave * 2;
-                    log(`💀 ${target.name} bị đánh bại! +${10 + state.wave * 2} vàng`);
-                    addFloatingText(`+${10 + state.wave * 2}💰`, target.x, target.y - 60, '#ffd700');
-                    spawnParticles(target.x, target.y, '#ff6666', 20);
-                }
-            }
-            // Cập nhật UI
-            updateUI();
-            renderTeam();
-            enemyCount.textContent = state.enemies.length;
-        }
-
-        // ----- Enemy attack -----
-        for (const enemy of state.enemies) {
-            if (enemy.hp <= 0) continue;
-            // Tìm mục tiêu (còn sống)
-            const targets = state.team.filter(c => c.hp > 0);
-            if (targets.length === 0) break;
-            const target = pick(targets);
-            const dmg = Math.max(1, enemy.atk - target.def + randInt(-2, 4));
-            target.hp -= dmg;
-            log(`💢 ${enemy.name} tấn công ${target.name} gây ${dmg} sát thương!`);
-            addFloatingText(`-${dmg}`, target.x || 200, target.y || 150, '#ff3333');
-            spawnParticles(target.x || 200, target.y || 150, '#ff3333', 8);
-            if (target.hp <= 0) {
-                log(`💀 ${target.name} đã ngã!`);
-            }
-            renderTeam();
-            updateUI();
-        }
-
-        // Cập nhật UI
-        updateUI();
-        renderTeam();
-        enemyCount.textContent = state.enemies.length;
-        battleStatus.textContent = '🟢 Sẵn sàng';
-        state.isBattling = false;
-
-        // Kiểm tra kết thúc wave
-        if (state.enemies.length === 0) {
-            finishWave();
-        } else if (state.team.every(c => c.hp <= 0)) {
-            log('💀 Toàn đội đã ngã!');
-            battleStatus.textContent = '💀 Thất bại';
-            stopBattle();
-        }
-    }
-
-    // ============================================================
-    //  FINISH WAVE
-    // ============================================================
-    function finishWave() {
-        state.wave++;
-        state.wins++;
-        const reward = 20 + state.wave * 5;
-        state.gold += reward;
-        state.playerHp = Math.min(state.maxHp, state.playerHp + 30);
-        log(`🏆 Hoàn thành Wave ${state.wave-1}! +${reward} vàng`);
-        addFloatingText(`🏆 +${reward}💰`, 400, 100, '#ffd700');
-        // Hồi sinh team
-        for (const c of state.team) {
-            if (c.hp <= 0) c.hp = Math.floor(c.maxHp * 0.5);
-            else c.hp = Math.min(c.maxHp, c.hp + 20);
-        }
-        // Boss wave đặc biệt
-        if (state.wave % 10 === 0) {
-            log(`👑 BOSS WAVE ${state.wave} sắp đến!`);
-        }
-        updateUI();
-        renderTeam();
-        battleStatus.textContent = '✅ Wave hoàn thành!';
-        stopBattle();
-        // Tự động spawn wave tiếp theo nếu auto
-        if (state.autoBattle) {
-            setTimeout(() => startWave(), 1500);
-        }
-    }
-
-    // ============================================================
-    //  START WAVE
-    // ============================================================
-    function startWave() {
-        if (state.enemies.length > 0) return;
-        if (state.team.every(c => c.hp <= 0)) {
-            log('❌ Đội hình đã chết! Hãy reset.');
-            return;
-        }
-        spawnWave();
-        battleStatus.textContent = '⚔️ Chiến đấu!';
-        // Tự động battle nếu auto
-        if (state.autoBattle) {
-            if (state.battleInterval) clearInterval(state.battleInterval);
-            state.battleInterval = setInterval(() => {
-                if (state.enemies.length === 0 || state.team.every(c => c.hp <= 0)) {
-                    if (state.enemies.length === 0) finishWave();
-                    else stopBattle();
-                    return;
-                }
-                battleTurn();
-            }, 1200);
-        } else {
-            // Chế độ thủ công: mỗi lần nhấn nút
-        }
-        updateUI();
-    }
-
-    function stopBattle() {
-        if (state.battleInterval) {
-            clearInterval(state.battleInterval);
-            state.battleInterval = null;
-        }
-        state.isBattling = false;
-        battleStatus.textContent = '🟢 Sẵn sàng';
-    }
-
-    // ============================================================
-    //  PARTICLES
-    // ============================================================
-    function spawnParticles(x, y, color, count = 10) {
-        for (let i = 0; i < count; i++) {
-            state.particles.push({
-                x: x + rand(-20, 20),
-                y: y + rand(-20, 20),
-                vx: rand(-3, 3),
-                vy: rand(-4, 1),
-                size: rand(2, 6),
-                life: rand(20, 40),
-                maxLife: 40,
-                color: color,
-            });
-        }
-    }
-
-    // ============================================================
-    //  RENDER LOOP (Canvas)
-    // ============================================================
-    function render() {
-        ctx.clearRect(0, 0, W, H);
-        // Background
-        const grad = ctx.createRadialGradient(450, 150, 50, 450, 150, 400);
-        grad.addColorStop(0, '#1a2a4a');
-        grad.addColorStop(0.7, '#0a1520');
-        grad.addColorStop(1, '#050a10');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, W, H);
-
-        // Ground
-        ctx.fillStyle = '#1a2a3a';
-        ctx.fillRect(0, 260, W, 4);
-
-        // Draw enemies
-        state.enemies.forEach(e => {
-            if (e.hitFlash > 0) {
-                ctx.shadowColor = '#ff4444';
-                ctx.shadowBlur = 30;
-            }
-            ctx.font = '48px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(e.avatar, e.x, e.y + 20);
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = '#ffdddd';
-            ctx.font = '14px sans-serif';
-            ctx.fillText(`${e.name} ❤️${Math.floor(e.hp)}`, e.x, e.y + 50);
-            // HP bar
-            ctx.fillStyle = '#222';
-            ctx.fillRect(e.x - 30, e.y + 56, 60, 8);
-            const hpPct = Math.max(0, e.hp / e.maxHp);
-            ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : (hpPct > 0.25 ? '#ffaa44' : '#f44336');
-            ctx.fillRect(e.x - 30, e.y + 56, 60 * hpPct, 8);
-        });
-
-        // Draw player team (on left side)
-        state.team.forEach((c, i) => {
-            if (c.hp <= 0) return;
-            const x = 60 + i * 100;
-            const y = 80 + i * 15;
-            ctx.font = '36px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(c.avatar, x, y + 20);
-            ctx.font = '12px sans-serif';
-            ctx.fillStyle = '#88ddff';
-            ctx.fillText(c.name, x, y + 45);
-            // HP bar
-            ctx.fillStyle = '#222';
-            ctx.fillRect(x - 25, y + 50, 50, 6);
-            const hpPct = Math.max(0, c.hp / c.maxHp);
-            ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : (hpPct > 0.25 ? '#ffaa44' : '#f44336');
-            ctx.fillRect(x - 25, y + 50, 50 * hpPct, 6);
-        });
-
-        // Particles
-        state.particles.forEach(p => {
-            const alpha = p.life / p.maxLife;
-            ctx.globalAlpha = alpha;
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
-            ctx.fill();
-        });
-        ctx.globalAlpha = 1;
-
-        // VS text
-        ctx.font = 'bold 28px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = 'rgba(255,200,100,0.15)';
-        ctx.fillText('⚔️ VS ⚔️', 400, 140);
-
-        // Update particles
-        for (let i = state.particles.length - 1; i >= 0; i--) {
-            const p = state.particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.05;
-            p.life--;
-            if (p.life <= 0) state.particles.splice(i, 1);
-        }
-
-        requestAnimationFrame(render);
-    }
-
-    // ============================================================
-    //  UPDATE UI
-    // ============================================================
-    function updateUI() {
-        goldSpan.textContent = state.gold;
-        waveSpan.textContent = state.wave;
-        winSpan.textContent = state.wins;
-        hpSpan.textContent = `${state.playerHp}/${state.maxHp}`;
-        waveNum.textContent = state.wave;
-        enemyCount.textContent = state.enemies.length;
-    }
-
-    // ============================================================
-    //  RESET
-    // ============================================================
-    function resetGame() {
-        stopBattle();
-        state.gold = 100;
-        state.wave = 1;
-        state.wins = 0;
-        state.playerHp = 100;
-        state.maxHp = 100;
-        state.enemies = [];
-        state.battleLog = [];
-        state.isBattling = false;
-        state.autoBattle = false;
-        state.particles = [];
-        autoBtn.textContent = '🤖 Tự động';
-        initTeam();
-        log('🔄 Đã reset game!');
-        battleStatus.textContent = '🟢 Sẵn sàng';
-        updateUI();
-        renderTeam();
-    }
-
-    // ============================================================
-    //  EVENT LISTENERS
-    // ============================================================
-    startBtn.addEventListener('click', startWave);
-    resetBtn.addEventListener('click', resetGame);
-
-    autoBtn.addEventListener('click', () => {
-        state.autoBattle = !state.autoBattle;
-        autoBtn.textContent = state.autoBattle ? '⏹️ Dừng auto' : '🤖 Tự động';
-        if (state.autoBattle) {
-            if (state.enemies.length === 0) startWave();
-            else {
-                state.battleInterval = setInterval(() => {
-                    if (state.enemies.length === 0) finishWave();
-                    else battleTurn();
-                }, 1200);
-            }
-        } else {
-            stopBattle();
-        }
     });
+}
 
-    // Click canvas để battle thủ công
-    canvas.addEventListener('click', () => {
-        if (!state.autoBattle && state.enemies.length > 0) {
+// ==================== 9. SPAWN ENEMIES ====================
+function spawnWave() {
+    const wave = state.wave;
+    const count = Math.min(2 + Math.floor(wave / 3), 6);
+    state.enemies = [];
+    for (let i = 0; i < count; i++) {
+        let template;
+        const r = Math.random();
+        if (wave % 10 === 0 && i === 0) {
+            template = { ...ENEMIES[4] };
+            template.hp = 120 + wave * 5;
+            template.maxHp = template.hp;
+            template.atk = 18 + wave * 1.2;
+            template.def = 6 + wave * 0.5;
+            template.name = `Boss Lv.${wave}`;
+        } else if (r < 0.2 && wave > 5) {
+            template = { ...ENEMIES[3] };
+            template.hp = 50 + wave * 3;
+            template.maxHp = template.hp;
+            template.atk = 12 + wave * 0.8;
+            template.def = 4 + wave * 0.4;
+        } else {
+            template = { ...pick(ENEMIES.slice(0,3)) };
+            template.hp = 25 + wave * 2.5;
+            template.maxHp = template.hp;
+            template.atk = 8 + wave * 0.6;
+            template.def = 3 + wave * 0.3;
+        }
+        state.enemies.push({
+            ...template,
+            x: 600 + rand(-60, 60) + i * 30,
+            y: 100 + rand(-30, 30),
+            w: 50,
+            h: 60,
+            hitFlash: 0,
+        });
+    }
+    enemyCount.textContent = state.enemies.length;
+    log(`🌊 Wave ${wave}: ${state.enemies.length} kẻ thù xuất hiện!`);
+}
+
+// ==================== 10. BATTLE LOGIC ====================
+function battleTurn() {
+    if (state.isBattling) return;
+    if (state.enemies.length === 0) { finishWave(); return; }
+    if (state.team.every(c => c.hp <= 0)) {
+        log('💀 Toàn đội đã ngã!');
+        battleStatus.textContent = '💀 Thất bại';
+        stopBattle();
+        return;
+    }
+
+    state.isBattling = true;
+    battleStatus.textContent = '⚔️ Đang chiến đấu...';
+
+    // Player attack
+    for (const ally of state.team) {
+        if (ally.hp <= 0 || state.enemies.length === 0) continue;
+        const target = state.enemies[0];
+        let dmg = Math.max(1, ally.atk - target.def + randInt(-2, 5));
+        let skillUsed = false;
+        if (Math.random() < 0.3) {
+            dmg = Math.max(1, Math.floor(ally.skillDmg * (0.8 + Math.random() * 0.4) - target.def * 0.5));
+            skillUsed = true;
+            log(`🔥 ${ally.name} dùng ${ally.skill} gây ${dmg} sát thương!`);
+            addFloatingText(`💥 ${dmg}`, target.x - 20, target.y - 40, '#ff8844');
+            spawnParticles(target.x, target.y, '#ffaa44', 12);
+        } else {
+            log(`⚔️ ${ally.name} tấn công gây ${dmg} sát thương.`);
+            addFloatingText(`-${dmg}`, target.x - 20, target.y - 40, '#88ddff');
+        }
+        target.hp -= dmg;
+        target.hitFlash = 8;
+
+        if (target.hp <= 0) {
+            const idx = state.enemies.indexOf(target);
+            if (idx > -1) {
+                state.enemies.splice(idx, 1);
+                state.gold += 10 + state.wave * 2;
+                log(`💀 ${target.name} bị đánh bại! +${10 + state.wave * 2} vàng`);
+                addFloatingText(`+${10 + state.wave * 2}💰`, target.x, target.y - 60, '#ffd700');
+                spawnParticles(target.x, target.y, '#ff6666', 20);
+            }
+        }
+        updateUI();
+        renderTeam();
+        enemyCount.textContent = state.enemies.length;
+    }
+
+    // Enemy attack
+    for (const enemy of state.enemies) {
+        if (enemy.hp <= 0) continue;
+        const targets = state.team.filter(c => c.hp > 0);
+        if (targets.length === 0) break;
+        const target = pick(targets);
+        const dmg = Math.max(1, enemy.atk - target.def + randInt(-2, 4));
+        target.hp -= dmg;
+        log(`💢 ${enemy.name} tấn công ${target.name} gây ${dmg} sát thương!`);
+        addFloatingText(`-${dmg}`, target.x || 200, target.y || 150, '#ff3333');
+        spawnParticles(target.x || 200, target.y || 150, '#ff3333', 8);
+        if (target.hp <= 0) log(`💀 ${target.name} đã ngã!`);
+        renderTeam();
+        updateUI();
+    }
+
+    state.isBattling = false;
+    battleStatus.textContent = '🟢 Sẵn sàng';
+
+    if (state.enemies.length === 0) finishWave();
+    else if (state.team.every(c => c.hp <= 0)) {
+        log('💀 Toàn đội đã ngã!');
+        battleStatus.textContent = '💀 Thất bại';
+        stopBattle();
+    }
+}
+
+// ==================== 11. FINISH WAVE ====================
+function finishWave() {
+    state.wave++;
+    state.wins++;
+    const reward = 20 + state.wave * 5;
+    state.gold += reward;
+    state.playerHp = Math.min(state.maxHp, state.playerHp + 30);
+    log(`🏆 Hoàn thành Wave ${state.wave-1}! +${reward} vàng`);
+    addFloatingText(`🏆 +${reward}💰`, 400, 100, '#ffd700');
+    
+    for (const c of state.team) {
+        if (c.hp <= 0) c.hp = Math.floor(c.maxHp * 0.5);
+        else c.hp = Math.min(c.maxHp, c.hp + 20);
+    }
+    if (state.wave % 10 === 0) log(`👑 BOSS WAVE ${state.wave} sắp đến!`);
+    
+    updateUI();
+    renderTeam();
+    battleStatus.textContent = '✅ Wave hoàn thành!';
+    stopBattle();
+    if (state.autoBattle) setTimeout(() => startWave(), 1500);
+}
+
+// ==================== 12. START / STOP WAVE ====================
+function startWave() {
+    if (state.enemies.length > 0) return;
+    if (state.team.every(c => c.hp <= 0)) {
+        log('❌ Đội hình đã chết! Hãy reset.');
+        return;
+    }
+    spawnWave();
+    battleStatus.textContent = '⚔️ Chiến đấu!';
+    if (state.autoBattle) {
+        if (state.battleInterval) clearInterval(state.battleInterval);
+        state.battleInterval = setInterval(() => {
+            if (state.enemies.length === 0 || state.team.every(c => c.hp <= 0)) {
+                if (state.enemies.length === 0) finishWave();
+                else stopBattle();
+                return;
+            }
             battleTurn();
+        }, 1200);
+    }
+    updateUI();
+}
+
+function stopBattle() {
+    if (state.battleInterval) {
+        clearInterval(state.battleInterval);
+        state.battleInterval = null;
+    }
+    state.isBattling = false;
+    battleStatus.textContent = '🟢 Sẵn sàng';
+}
+
+// ==================== 13. PARTICLES ====================
+function spawnParticles(x, y, color, count = 10) {
+    for (let i = 0; i < count; i++) {
+        state.particles.push({
+            x: x + rand(-20, 20),
+            y: y + rand(-20, 20),
+            vx: rand(-3, 3),
+            vy: rand(-4, 1),
+            size: rand(2, 6),
+            life: rand(20, 40),
+            maxLife: 40,
+            color: color,
+        });
+    }
+}
+
+// ==================== 14. RENDER LOOP (Canvas with images) ====================
+function render() {
+    ctx.clearRect(0, 0, W, H);
+    
+    // Background
+    const grad = ctx.createRadialGradient(450, 150, 50, 450, 150, 400);
+    grad.addColorStop(0, '#1a2a4a');
+    grad.addColorStop(0.7, '#0a1520');
+    grad.addColorStop(1, '#050a10');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#1a2a3a';
+    ctx.fillRect(0, 260, W, 4);
+
+    // ---- Draw enemies ----
+    state.enemies.forEach(e => {
+        if (e.hitFlash > 0) {
+            ctx.shadowColor = '#ff4444';
+            ctx.shadowBlur = 30;
         }
+        ctx.font = '48px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(e.avatar, e.x, e.y + 20);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#ffdddd';
+        ctx.font = '14px sans-serif';
+        ctx.fillText(`${e.name} ❤️${Math.floor(e.hp)}`, e.x, e.y + 50);
+        ctx.fillStyle = '#222';
+        ctx.fillRect(e.x - 30, e.y + 56, 60, 8);
+        const hpPct = Math.max(0, e.hp / e.maxHp);
+        ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : (hpPct > 0.25 ? '#ffaa44' : '#f44336');
+        ctx.fillRect(e.x - 30, e.y + 56, 60 * hpPct, 8);
     });
 
-    // ============================================================
-    //  START
-    // ============================================================
+    // ---- Draw player team with images ----
+    state.team.forEach((c, i) => {
+        if (c.hp <= 0) return;
+        const x = 70 + i * 110;
+        const y = 70 + i * 10;
+        
+        // Vẽ ảnh nhân vật
+        const img = state.imageCache[c.image];
+        if (img) {
+            ctx.drawImage(img, x - 35, y - 35, 70, 70);
+        } else {
+            // Fallback emoji
+            ctx.font = '40px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(c.avatar, x, y + 10);
+        }
+        
+        // Tên và HP
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#88ddff';
+        ctx.fillText(c.name, x, y + 50);
+        ctx.fillStyle = '#222';
+        ctx.fillRect(x - 25, y + 55, 50, 6);
+        const hpPct = Math.max(0, c.hp / c.maxHp);
+        ctx.fillStyle = hpPct > 0.5 ? '#4caf50' : (hpPct > 0.25 ? '#ffaa44' : '#f44336');
+        ctx.fillRect(x - 25, y + 55, 50 * hpPct, 6);
+    });
+
+    // ---- Particles ----
+    state.particles.forEach(p => {
+        const alpha = p.life / p.maxLife;
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // VS text
+    ctx.font = 'bold 28px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,200,100,0.15)';
+    ctx.fillText('⚔️ VS ⚔️', 400, 140);
+
+    // Update particles
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05;
+        p.life--;
+        if (p.life <= 0) state.particles.splice(i, 1);
+    }
+
+    requestAnimationFrame(render);
+}
+
+// ==================== 15. UI UPDATE ====================
+function updateUI() {
+    goldSpan.textContent = state.gold;
+    waveSpan.textContent = state.wave;
+    winSpan.textContent = state.wins;
+    hpSpan.textContent = `${state.playerHp}/${state.maxHp}`;
+    waveNum.textContent = state.wave;
+    enemyCount.textContent = state.enemies.length;
+}
+
+// ==================== 16. FLOATING TEXT ====================
+function addFloatingText(text, x, y, color = '#ffd700') {
+    const el = document.createElement('div');
+    el.className = 'floatText';
+    el.textContent = text;
+    el.style.left = (x + rand(-20, 20)) + 'px';
+    el.style.top = (y + rand(-20, 20)) + 'px';
+    el.style.color = color;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+}
+
+// ==================== 17. LOG ====================
+function log(msg) {
+    state.battleLog.push('⚔️ ' + msg);
+    if (state.battleLog.length > 30) state.battleLog.shift();
+    logDiv.innerHTML = state.battleLog.slice(-8).join('<br>');
+    logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+// ==================== 18. RESET ====================
+function resetGame() {
+    stopBattle();
+    state.gold = 100;
+    state.wave = 1;
+    state.wins = 0;
+    state.playerHp = 100;
+    state.maxHp = 100;
+    state.enemies = [];
+    state.battleLog = [];
+    state.isBattling = false;
+    state.autoBattle = false;
+    state.particles = [];
+    autoBtn.textContent = '🤖 Tự động';
     initTeam();
+    log('🔄 Đã reset game!');
+    battleStatus.textContent = '🟢 Sẵn sàng';
+    updateUI();
+    renderTeam();
+}
+
+// ==================== 19. EVENT LISTENERS ====================
+startBtn.addEventListener('click', startWave);
+resetBtn.addEventListener('click', resetGame);
+
+autoBtn.addEventListener('click', () => {
+    state.autoBattle = !state.autoBattle;
+    autoBtn.textContent = state.autoBattle ? '⏹️ Dừng auto' : '🤖 Tự động';
+    if (state.autoBattle) {
+        if (state.enemies.length === 0) startWave();
+        else {
+            state.battleInterval = setInterval(() => {
+                if (state.enemies.length === 0) finishWave();
+                else battleTurn();
+            }, 1200);
+        }
+    } else stopBattle();
+});
+
+canvas.addEventListener('click', () => {
+    if (!state.autoBattle && state.enemies.length > 0) battleTurn();
+});
+
+// ==================== 20. START GAME ====================
+initTeam().then(() => {
     render();
     updateUI();
     log('🎮 Anime Card Brawler đã sẵn sàng!');
     log('📌 Nhấn "Bắt đầu Wave" để chiến đấu.');
-
-    console.log('Anime Card Brawler loaded!');
     console.log('Team:', state.team);
+});
+
+console.log('%c Anime Card Brawler - Ảnh nhân vật ', 'background: #2a4a7a; color: white; font-size: 20px; padding: 8px;');
+console.log('💡 Hướng dẫn: Thêm ảnh nhân vật vào thư mục assets/characters/');
 </script>
 </body>
 </html>
